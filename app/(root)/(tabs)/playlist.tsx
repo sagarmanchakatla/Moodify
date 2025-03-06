@@ -17,6 +17,7 @@ import { ActivityIndicator, MD2Colors } from "react-native-paper";
 import Feather from "@expo/vector-icons/Feather";
 
 import useUserProvider from "@/hook/useUserProvider";
+import useHistoryProvider from "@/hook/useHistoryProvider";
 import { router } from "expo-router";
 
 export default function PlaylistsPage() {
@@ -67,13 +68,18 @@ export default function PlaylistsPage() {
     setSongPlay(currentlyPlaying!);
   };
 
-  const { displayNameForUser } = useUserProvider();
+  const { displayNameForUser, user, isAuthenticated } = useUserProvider();
+  const { addToHistory, processSearchQuery, getHistory } = useHistoryProvider();
   const [search, setSearch] = useState<string>();
   const { fetchSearchQuery } = useSongProvider();
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     if (search) {
       fetchSearchQuery(search);
+      const songInfo = await processSearchQuery(search);
+      if (songInfo) {
+        await addToHistory(user?.id, songInfo);
+      }
       router.push("/(root)/(tabs)/playlist");
     }
   };

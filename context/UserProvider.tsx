@@ -17,6 +17,7 @@ const initialState:UserContextType = {
     last_name : "",
     id : "",
     avatar : "",
+    fav_artist: "",
   },
   updateState : ()=>{}
 }

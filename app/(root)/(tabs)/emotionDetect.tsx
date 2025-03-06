@@ -57,7 +57,12 @@ export default function EmotionDetect() {
 
   const handleSearch = () => {
     if (user && emotion) {
-      fetchSearchQuery(`${emotion} ${user?.genre}`);
+      console.log(
+        `${emotion} ${user?.fav_artist.split("-")[0]} ${user?.genre}`
+      );
+      fetchSearchQuery(
+        `${emotion} ${user?.fav_artist.split("-")[0]} ${user?.genre}`
+      );
       router.push("/(root)/(tabs)/playlist");
     }
   };
