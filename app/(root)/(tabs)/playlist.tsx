@@ -88,7 +88,7 @@ export default function PlaylistsPage() {
     <DashBoardLayout>
       <DashBoardHeader title="Playlists" />
       <View className="flex flex-col bg-white p-3 h-full">
-        <View className="flex-row items-center bg-gray-100 rounded-full px-4 py-2 mt-4">
+        <View className="flex-row items-center bg-gray-100 rounded-full px-4 py-2 mt-4 mb-4">
           <Image source={icons.search} className="w-6 h-6" />
           <TextInput
             placeholder="Search Here..."

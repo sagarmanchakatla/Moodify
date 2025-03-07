@@ -45,17 +45,24 @@ export default function SongCard({ songs }: SongCardProps) {
   };
 
   const handleLikePress = async (song: SongSchema) => {
+    console.log(song.id);
     if (!user) {
       console.log("User not logged in");
       return;
     }
     try {
       if (isLiked(song?.id)) {
-        await removeSong(user.id, Number(song?.id));
+        await removeSong(
+          user.id,
+          Number(song?.id),
+          song?.url || "",
+          song?.title || ""
+        );
         setLikedSongs(likedSongs.filter((id) => id !== song?.id));
       } else {
         const likedSong: LikeSong = {
           song_id: song?.id,
+          song_title: song?.title,
           song_thumbnail: song?.thumbnail,
           song_url: song?.url || "",
           song_artist: song?.artist,

@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase";
+import supabase from "@/lib/supabase";
 import { useState } from "react";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { HistorySchema } from "@/schema/history";
@@ -57,7 +57,8 @@ export default function useHistoryProvider() {
         .from("History")
         .select("*")
         .eq("user_id", userId)
-        .eq("artist_name", songInfo.artist_name);
+        .eq("artist_name", songInfo.artist_name)
+        .eq("song_name", songInfo.song_name);
 
       if (fetchError) throw fetchError;
 

@@ -12,12 +12,12 @@ import DashBoardLayout from "@/components/DashBoardLayout";
 import icons from "@/constants/icons";
 import DashBoardCard from "@/components/DashBoardCard";
 import TopTenSongs from "@/components/TopTenSongs";
-import RecentlyPlayedHeader from "@/components/RecentlyPayedHeader";
-import RecentlyPlayedList from "@/components/RecentlyPlayedList";
 import { recentPlayedSongs } from "@/constants/data";
 import { router } from "expo-router";
 import useUserProvider from "@/hook/useUserProvider";
 import useSongProvider from "@/hook/useSongProvider";
+
+import LikedPlayedList from "@/components/LikedPlayedList";
 
 const HomeScreen = () => {
   const { displayNameForUser } = useUserProvider();
@@ -113,11 +113,8 @@ const HomeScreen = () => {
 
         <BannerComponent />
 
-        <RecentlyPlayedHeader time="Recently Play" />
-        <RecentlyPlayedList
-          items={recentPlayedSongs}
-          icon={icons.smallplayicon}
-        />
+        {/* <LikedPlayedHeader time="Recently Play" /> */}
+        <LikedPlayedList items={recentPlayedSongs} icon={icons.smallplayicon} />
       </View>
     </DashBoardLayout>
   );

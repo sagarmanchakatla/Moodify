@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase";
+import supabase from "@/lib/supabase";
 import { LikeSong } from "@/schema/likeSong";
 import { useState } from "react";
 
@@ -13,7 +13,9 @@ export default function useLikeSongProvider() {
         .from("LikedSongs")
         .select("*")
         .eq("user_id", userId)
-        .eq("id", songInfo.song_id);
+        .eq("song_title", songInfo.song_title)
+        .eq("song_url", songInfo.song_url);
+      // .eq("id", songInfo.song_id);
 
       if (fetchError) throw fetchError;
 
@@ -25,7 +27,7 @@ export default function useLikeSongProvider() {
       const { error: insertError } = await supabase.from("LikedSongs").insert([
         {
           user_id: userId,
-          id: Number(songInfo.song_id),
+          song_title: songInfo.song_title,
           song_thumbnail: songInfo.song_thumbnail,
           song_url: songInfo.song_url,
           song_artist: songInfo.song_artist,
@@ -41,14 +43,21 @@ export default function useLikeSongProvider() {
     }
   };
 
-  const removeSong = async (userId: string, song_id: number) => {
+  const removeSong = async (
+    userId: string,
+    song_id: number,
+    song_url: string,
+    song_title: string
+  ) => {
     setLoading(true);
     try {
       const { error } = await supabase
         .from("LikedSongs")
         .delete()
         .eq("user_id", userId)
-        .eq("id", song_id);
+        .eq("song_url", song_url)
+        .eq("song_title", song_title);
+      // .eq("id", song_id);
 
       if (error) throw error;
     } catch (error) {

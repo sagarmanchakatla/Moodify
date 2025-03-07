@@ -1,4 +1,4 @@
-import { TouchableOpacity, View,Text } from "react-native"
+import { TouchableOpacity, View, Text } from "react-native";
 
 const RecentlyPlayedHeader: React.FC<{ time: string }> = ({ time }) => {
   return (
@@ -8,7 +8,7 @@ const RecentlyPlayedHeader: React.FC<{ time: string }> = ({ time }) => {
         <Text className="text-md text-primarygray">See more</Text>
       </TouchableOpacity>
     </View>
-  )
-}
+  );
+};
 
 export default RecentlyPlayedHeader;

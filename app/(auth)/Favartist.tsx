@@ -59,7 +59,7 @@ const FavArtistScreen: React.FC = () => {
     if (selectedArtists.includes(artist)) {
       setSelectedArtists((prev) => prev.filter((a) => a !== artist));
     } else {
-      if (selectedArtists.length < 3) {
+      if (selectedArtists.length < 5) {
         setSelectedArtists((prev) => [...prev, artist]);
         setError("");
       } else {
@@ -86,8 +86,8 @@ const FavArtistScreen: React.FC = () => {
       return;
     }
 
-    if (selectedArtists.length >= 3) {
-      setError("You can only select up to 3 artists.");
+    if (selectedArtists.length >= 5) {
+      setError("You can only select up to 5 artists.");
       return;
     }
 
