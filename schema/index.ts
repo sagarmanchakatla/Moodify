@@ -9,6 +9,7 @@ export interface UserSchema {
     genre: string;
     id: string,
     avatar : string,
+    fav_artist: string
 }
 
 export interface UserContextType {

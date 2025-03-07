@@ -83,7 +83,7 @@ const useUserProvider = () => {
       }
    };
 
-   const updateUserProfile = (data: { gender: string, weight: number, height: number, date_of_birth: Date, age: number } | { genre: string }) => {
+   const updateUserProfile = (data: { gender: string, weight: number, height: number, date_of_birth: Date, age: number } | { genre: string } | {fav_artist: string}) => {
       updateState(pre => ({
          ...pre,
          user: {

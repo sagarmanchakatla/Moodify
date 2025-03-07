@@ -36,7 +36,8 @@ const GenreSelectionScreen: React.FC = () => {
         }else{
             updateUserProfile({genre: selectedGenres.join("-")});
             setError(pre=>"");
-            router.push("/(auth)/Welcome");
+            // router.push("/(auth)/Welcome");
+            router.push('/(auth)/Favartist')
         }
     }
 
