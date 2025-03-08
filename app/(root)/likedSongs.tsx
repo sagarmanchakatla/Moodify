@@ -29,8 +29,8 @@ const LikedSongsScreen: React.FC = () => {
   };
 
   return (
-    <View className="flex-1 bg-black p-4">
-      <Text className="text-white text-2xl font-bold mb-4">Liked Songs</Text>
+    <View className="flex-1 p-4">
+      <Text className="text-black text-2xl font-bold mb-4">Liked Songs</Text>
 
       {loading ? (
         <Text className="text-gray-500">Loading...</Text>
@@ -41,13 +41,13 @@ const LikedSongsScreen: React.FC = () => {
           data={likedSongs}
           keyExtractor={(item) => item.song_id?.toString() || item.song_url}
           renderItem={({ item }) => (
-            <View className="flex flex-row items-center bg-gray-800 p-4 rounded-lg my-2">
+            <View className="flex flex-row items-center  p-4 rounded-lg my-2">
               <Image
                 source={{ uri: item.song_thumbnail }}
                 className="w-16 h-16 rounded-lg"
               />
               <View className="ml-4 flex-1">
-                <Text className="text-white text-lg font-semibold">
+                <Text className="text-black text-lg font-semibold">
                   {item.song_title}
                 </Text>
                 <Text className="text-gray-400">{item.song_artist}</Text>

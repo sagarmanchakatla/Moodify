@@ -40,9 +40,7 @@ const LikedPlayedList: React.FC<RecentlyPlayedListProps> = ({
   return (
     <>
       <View className="flex-row justify-between  mb-2">
-        <Text className="text-lg font-Popping-Bold text-gray-900">
-          Liked Songs
-        </Text>
+        <Text className="text-lg font-Popping-Bold ">Liked Songs</Text>
         <TouchableOpacity onPress={() => router.push("/(root)/likedSongs")}>
           <Text className="text-md text-primarygray">See more</Text>
         </TouchableOpacity>
@@ -56,13 +54,13 @@ const LikedPlayedList: React.FC<RecentlyPlayedListProps> = ({
               key={song.song_id ? song.song_id.toString() : `song-${index}`}
               className="w-full my-2"
             >
-              <View className="flex flex-row items-center bg-gray-800 p-4 rounded-lg">
+              <View className="flex flex-row items-center  p-4 rounded-lg">
                 <Image
                   source={{ uri: song.song_thumbnail }}
                   className="w-16 h-16 rounded-lg"
                 />
                 <View className="ml-4">
-                  <Text className="text-white text-lg font-semibold">
+                  <Text className="text-black text-lg font-semibold">
                     {song.song_title}
                   </Text>
                   <Text className="text-gray-400">{song.song_artist}</Text>
