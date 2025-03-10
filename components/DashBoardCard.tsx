@@ -6,7 +6,8 @@ import icons from '@/constants/icons'
 interface CardContantSchema {
     title: string,
     primaryText?: string,
-    secondartText?: string
+    secondartText?: string,
+    component?: ReactNode
 }
 
 interface DashBoardCardSchema {
@@ -37,13 +38,23 @@ const DisplayIcon: React.FC<{ icon?: any, uri?: string }> = ({ icon, uri }) => {
 }
 
 
-const CardContant: React.FC<CardContantSchema> = ({ title, primaryText, secondartText }) => {
+const CardContant: React.FC<CardContantSchema> = ({ title, primaryText, secondartText, component }) => {
+    let content;
+    if (component) {
+        content = component;
+    } else {
+        content = (
+            <View className="flex-1">
+                <Text className="text-ms font-Popping-SemiBold text-gray-800">{title}</Text>
+                {primaryText && <Text className="text-sm font-Popping text-gray-600">{primaryText}</Text>}
+                {secondartText && <Text className="text-sm font-Popping-Light text-gray-400">{secondartText}</Text>}
+            </View>
+        )
+    }
     return (
-        <View className="flex-1">
-            <Text className="text-ms font-Popping-SemiBold text-gray-800">{title}</Text>
-            {primaryText && <Text className="text-sm font-Popping text-gray-600">{primaryText}</Text>}
-            {secondartText && <Text className="text-sm font-Popping-Light text-gray-400">{secondartText}</Text>}
-        </View>
+        <>
+            {content}
+        </>        
     )
 }
 

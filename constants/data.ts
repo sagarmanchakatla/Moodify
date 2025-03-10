@@ -106,6 +106,61 @@ export const OtherSettings = [
 ]
 
 export const MenuLists = [
-    { title: "Notification", path:"/notification" },
-    { title: "History", path:"/recentlyPlayed" },
+    { title: "Notification", path: "/notification", icon: icons.notificationMenuicon },
+    { title: "History", path: "/recentlyPlayed", icon: icons.historyicon },
+    { title: "Map", path: "/explore", icon: icons.exploreicon },
 ]
+export const mumbaiLocations = [
+    {
+        lat: 18.9220,
+        lng: 72.8347,
+        name: "Gateway of India",
+        username: "traveler_01",
+        profilePic: "https://randomuser.me/api/portraits/men/1.jpg",
+        description: "A historic arch monument overlooking the Arabian Sea.",
+    },
+    {
+        lat: 18.9398,
+        lng: 72.8354,
+        name: "Chhatrapati Shivaji Maharaj Terminus",
+        username: "history_lover",
+        profilePic: "https://randomuser.me/api/portraits/women/2.jpg",
+        description: "A UNESCO World Heritage railway station with Victorian-Gothic architecture.",
+    },
+    {
+        lat: 18.9440,
+        lng: 72.8207,
+        name: "Marine Drive",
+        username: "sunset_chaser",
+        profilePic: "https://randomuser.me/api/portraits/men/3.jpg",
+        description: "A beautiful seaside promenade, perfect for evening walks and sunsets.",
+    },
+    {
+        lat: 18.9067,
+        lng: 72.8147,
+        name: "Colaba Causeway",
+        username: "shopaholic_mumbai",
+        profilePic: "https://randomuser.me/api/portraits/women/4.jpg",
+        description: "A bustling street market known for trendy fashion and souvenirs.",
+    },
+    {
+        lat: 18.9543,
+        lng: 72.8160,
+        name: "Girgaon Chowpatty Beach",
+        username: "foodie_explorer",
+        profilePic: "https://randomuser.me/api/portraits/men/5.jpg",
+        description: "A famous beach known for street food like pav bhaji and bhel puri.",
+    }
+];
+
+
+export const env = {
+    notifyId: process.env.EXPO_PUBLIC_NATIVE_NOTIFY_APP_ID!,
+    notifyToken: process.env.EXPO_PUBLIC_NATIVE_NOTIFY_APP_TOKEN!,
+    supabaseProjectUrl: process.env.EXPO_PUBLIC_SUPABASE_Project_URL!,
+    supabaseAnonPublicAPIKey: process.env.EXPO_PUBLIC_SUPABASE_ANON_PUBLIC_API_KEY!,
+    faceApiKey : process.env.EXPO_PUBLIC_FACE_API_SECRET_KEY!,
+    geminiKey : process.env.EXPO_PUBLIC_GOOGLE_GEMINI_API_KEY!,
+    musicApiKeyOne : process.env.EXPO_PUBLIC_GOOGLE_MUSIC_API_KEY_1!,
+    musicApiKeyTwo : process.env.EXPO_PUBLIC_GOOGLE_MUSIC_API_KEY_2!
+}

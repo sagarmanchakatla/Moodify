@@ -176,7 +176,7 @@ export default function EmotionDetect() {
             <Text className="font-Popping-SemiBold">Switch Camera</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={pickImage}
+            onPress={()=>pickImage("emotion")}
             className="flex-1 p-4 bg-red-200 rounded-lg items-center"
           >
             <Text className="font-Popping-SemiBold">Pick From Gallery</Text>

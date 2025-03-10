@@ -8,7 +8,7 @@ export default function useImageProvider() {
   if (!context) {
     throw Error("useImageProvier must call inside the ImageProviser Component ");
   }
-  const { base64ImageString, height, updatePicture, uri, width,fileName,contentType} = context;
+  const { base64ImageString, height, imageFor,uri, width,fileName,contentType,updatePicture} = context;
 
   const resetImage = () => {
     updatePicture(pre => ({
@@ -22,7 +22,7 @@ export default function useImageProvider() {
     }))
   }
 
-  const pickImage = async () => {
+  const pickImage = async (imageFor:"emotion"|"profile") => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
       allowsEditing: true,
@@ -40,7 +40,8 @@ export default function useImageProvider() {
         fileName : image.fileName,
         base64ImageString: image.base64!,
         height: image.height!,
-        width: image.width!
+        width: image.width!,
+        imageFor
       }));
     }
   };
@@ -52,6 +53,7 @@ export default function useImageProvider() {
     uri,
     fileName,
     contentType,
+    imageFor,
     resetImage,
     pickImage,
     updatePicture

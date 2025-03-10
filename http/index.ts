@@ -1,4 +1,5 @@
 import { FaceEmotionSchema } from "@/schema/emotion";
+import { env } from "@/constants/data";
 
 const BASEURL = "https://face-api2.p.rapidapi.com/api/FaceOrchestrator";
 
@@ -17,7 +18,7 @@ export const detectEmotion = async (
       detectAge: false,
     }),
     headers: {
-      "x-rapidapi-key": "5d1697b208mshd28835166cf7e93p10a73fjsn9c8d425399f5",
+      "x-rapidapi-key": env.faceApiKey,
       "x-rapidapi-host": "face-api2.p.rapidapi.com",
       "Content-Type": "application/json",
     },

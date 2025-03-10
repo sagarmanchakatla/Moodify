@@ -52,7 +52,7 @@ const ProfileScreen: React.FC = () => {
 
   const toggleSwitch = () => setNotificationEnabled((prev) => !prev);
   const handleEdit = async () => {
-    await pickImage();
+    //await pickImage();
   };
 
   // Define AccountsSetting dynamically based on user data

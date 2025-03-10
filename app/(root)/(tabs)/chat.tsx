@@ -22,9 +22,8 @@ export default function SocialPage() {
   const { similarUsers, allUsers, loading, error } = useSimilarUsers();
   const [search, setSearch] = useState<string>("");
   const [filteredUsers, setFilteredUsers] = useState(similarUsers);
-  const [activeTab, setActiveTab] = useState("similar");
+  const [activeTab, setActiveTab] = useState<'similar'|'all'|'friends'|'invites'>("similar");
 
-  // Helper function to display genres in a readable format
   const formatList = (text: string) => {
     return text.split("-").join(", ");
   };
@@ -87,31 +86,51 @@ export default function SocialPage() {
 
         <View className="flex-row bg-white py-3 gap-5">
           <TouchableOpacity
-            className={`px-5 py-2 rounded-full ${
-              activeTab === "all" ? "bg-red-100" : "bg-gray-200"
-            }`}
+            className={`px-5 py-2 rounded-full ${activeTab === "all" ? "bg-red-100" : "bg-gray-200"
+              }`}
             onPress={() => setActiveTab("all")}
           >
             <Text
-              className={`text-sm font-Popping-SemiBold ${
-                activeTab === "all" ? "text-black" : "text-primarygray"
-              }`}
+              className={`text-sm font-Popping-SemiBold ${activeTab === "all" ? "text-black" : "text-primarygray"
+                }`}
             >
               All
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            className={`px-5 py-2 rounded-full ml-2 ${
-              activeTab === "similar" ? "bg-red-100" : "bg-gray-200"
-            }`}
+            className={`px-5 py-2 rounded-full ml-2 ${activeTab === "similar" ? "bg-red-100" : "bg-gray-200"
+              }`}
             onPress={() => setActiveTab("similar")}
           >
             <Text
-              className={`text-sm font-Popping-SemiBold ${
-                activeTab === "similar" ? "text-black" : "text-primarygray"
-              }`}
+              className={`text-sm font-Popping-SemiBold ${activeTab === "similar" ? "text-black" : "text-primarygray"
+                }`}
             >
               Similar
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            className={`px-5 py-2 rounded-full ${activeTab === "friends" ? "bg-red-100" : "bg-gray-200"
+              }`}
+            onPress={() => setActiveTab("friends")}
+          >
+            <Text
+              className={`text-sm font-Popping-SemiBold ${activeTab === "all" ? "text-black" : "text-primarygray"
+                }`}
+            >
+              Friend
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            className={`px-5 py-2 rounded-full ml-2 ${activeTab === "invites" ? "bg-red-100" : "bg-gray-200"
+              }`}
+            onPress={() => setActiveTab("invites")}
+          >
+            <Text
+              className={`text-sm font-Popping-SemiBold ${activeTab === "similar" ? "text-black" : "text-primarygray"
+                }`}
+            >
+              Invites
             </Text>
           </TouchableOpacity>
         </View>
@@ -139,8 +158,8 @@ export default function SocialPage() {
                 {search
                   ? "No matching results found"
                   : activeTab === "similar"
-                  ? "No similar music fans found"
-                  : "No music fans found"}
+                    ? "No similar music fans found"
+                    : "No music fans found"}
               </Text>
             </View>
           ) : (
@@ -160,9 +179,8 @@ export default function SocialPage() {
                     />
                   </DashBoardCard.BigIcon>
                   <DashBoardCard.Content
-                    title={`${similarUser.first_name || ""} ${
-                      similarUser.last_name || ""
-                    }`}
+                    title={`${similarUser.first_name || ""} ${similarUser.last_name || ""
+                      }`}
                     primaryText={`${(
                       (similarUser.similarity_score || 0) * 100
                     ).toFixed(0)}% Match`}

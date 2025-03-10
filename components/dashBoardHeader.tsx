@@ -51,11 +51,13 @@ const MenuListComponent: React.FC<{ handleToggle: React.Dispatch<React.SetStateA
     return (
         <View className='flex flex-col justify-center items-center absolute top-14 right-0 w-[150px] gap-2 z-20 rounded-l-xl bg-offwhite'>
             {MenuLists.map((item, index) => (
-                <TouchableOpacity className='p-3 w-full border-b-[1px] rounded-xl' onPress={() => handleClick(item.path as RelativePathOptions)} key={index}>
+                <TouchableOpacity className='p-3 w-full border-b-[1px] rounded-xl flex flex-row items-center gap-2' onPress={() => handleClick(item.path as RelativePathOptions)} key={index}>
+                    <Image source={item.icon} className='w-6 h-6'/>
                     <Text className='text-md text-center font-Popping-SemiBold'>{item.title}</Text>
                 </TouchableOpacity>
             ))}
-            <TouchableOpacity className='p-3 w-full border-b-[1px] rounded-xl' onPress={handleLogout}>
+            <TouchableOpacity className='p-3 w-full rounded-xl flex-row items-center gap-2' onPress={handleLogout}>
+                <Image source={icons.logoutMenuicon} className='w-6 h-6'/>
                 <Text className='text-md text-center font-Popping-SemiBold'>Logout</Text>
             </TouchableOpacity>
         </View>

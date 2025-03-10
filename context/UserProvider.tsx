@@ -18,6 +18,8 @@ const initialState:UserContextType = {
     id : "",
     avatar : "",
     fav_artist: "",
+    latitude : null,
+    longitude : null
   },
   updateState : ()=>{}
 }
@@ -57,7 +59,6 @@ const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 
       const userDetails = await fetchUser(user.id);
       if (userDetails) {
-        console.log("Setting user state:", userDetails);
         setUser(pre=>({
           ...pre,
           isAuthenticated : true,

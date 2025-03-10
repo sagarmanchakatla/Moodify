@@ -8,10 +8,12 @@ import { makeRedirectUri } from "expo-auth-session";
 import * as QueryParams from "expo-auth-session/build/QueryParams";
 import * as WebBrowser from "expo-web-browser";
 import { decode } from 'base64-arraybuffer'
+import useNotification from "./useNotification";
 
 
 const useUserProvider = () => {
    const { isAuthenticated, updateState, user } = useContext<UserContextType>(UserContext);
+   const {registerUserIdForNotification} = useNotification();
 
    const performOAuth = async (provider: "google" | "github" | "facebook") => {
       const redirectTo = makeRedirectUri();
@@ -37,6 +39,8 @@ const useUserProvider = () => {
                console.error("User ID is undefined");
                return;
             }
+            console.log(userId + "in oauth ");
+            await registerUserIdForNotification(userId);
             const { data: existingUser, count, error } = await supabase
                .from("UsersProfile")
                .select("*")
@@ -83,7 +87,7 @@ const useUserProvider = () => {
       }
    };
 
-   const updateUserProfile = (data: { gender: string, weight: number, height: number, date_of_birth: Date, age: number } | { genre: string } | {fav_artist: string}) => {
+   const updateUserProfile = (data: { gender: string, weight: number, height: number, date_of_birth: Date, age: number } | { genre: string } | { fav_artist: string }) => {
       updateState(pre => ({
          ...pre,
          user: {
@@ -147,6 +151,7 @@ const useUserProvider = () => {
          if (fetchError) {
             Alert.alert("Can't fetch the your credencials retry again ");
          } else {
+            await registerUserIdForNotification(data.user.id);
             updateState(pre => ({
                ...pre,
                isAuthenticated: true,
@@ -200,34 +205,47 @@ const useUserProvider = () => {
    }
 
    const uploadProfilePicture = async (base64String: string, contentType: string, fileName: string) => {
-      const completeFileName = user!.id + fileName;
       const { data, error } = await supabase
          .storage
          .from('avatar')
-         .upload(completeFileName, decode(base64String), {
+         .upload(user!.id!, decode(base64String), {
             contentType,
-            upsert : true
+            upsert: true,
          },);
       if (error) {
          console.log(error);
          Alert.alert(error.message ?? error.cause ?? "Can't upload the image ");
          return;
-      } 
-      const {error:updateError} = await supabase.from("UsersProfile").update({avatar:completeFileName}).eq("id",user?.id)
-         if(updateError){
-            console.log(updateError)
-            Alert.alert("Can't set the update the User Profile try again");
-            return;
+      }
+      const update = await supabase.from("UsersProfile").update({"avatar":user!.id!}).eq("id",user!.id!);
+      if(update.error){
+         throw Error(update.error.message );
+      }
+      updateState(pre=>({
+         ...pre,
+         user : {
+            ...pre.user!,
+            avatar : user!.id!
          }
-         updateState(pre => ({
-            ...pre,
-            user: {
-               ...pre.user!,
-               avatar: completeFileName
-            }
-         }))
-         return;
+      }))
+      return;
    }
+
+   const setUserLocation = async (coordinates:{latitude:number,longitude:number})=>{
+      const {error} = await supabase.from("UsersProfile").update(coordinates).eq("id",user?.id);
+      if(error){
+         console.log(error);
+         throw Error(error.message??error.cause??"Can't update users coordinates now !");
+      }
+      updateState(pre=>({
+         ...pre,
+         user : {
+            ...pre.user!,
+            latitude : coordinates.latitude,
+            longitude : coordinates.longitude
+         }
+      }));
+   }  
 
    return {
       isAuthenticated,
@@ -241,6 +259,7 @@ const useUserProvider = () => {
       singUpUser,
       resetPassword,
       validateOTP,
+      setUserLocation,
       singInWithEmailAndPassword
    };
 };

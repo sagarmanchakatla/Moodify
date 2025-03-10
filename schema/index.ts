@@ -2,20 +2,26 @@ export interface UserSchema {
     first_name: string;
     last_name: string;
     age: number;
-    height : number,
-    weight : number,
+    height: number,
+    weight: number,
     date_of_birth: string | Date;
     gender: string;
     genre: string;
     id: string,
-    avatar : string,
+    avatar: string,
     fav_artist: string
+    latitude: number | null,
+    longitude: number | null
 }
 
 export interface UserContextType {
     user: UserSchema | null;
     isAuthenticated: boolean,
     updateState: React.Dispatch<React.SetStateAction<UserContextType>>
+}
+
+export interface SimilarUser extends UserSchema {
+    similarity_score: number;
 }
 
 export interface RecentlyPlayedListSchema {
@@ -29,4 +35,12 @@ export interface PictureType {
     base64Image: string,
     height: number,
     weight: number
+}
+
+export interface NotificationSchema {
+    date: string,
+    title: string
+    message: string,
+    notification_id: number,
+    pushData: {},
 }

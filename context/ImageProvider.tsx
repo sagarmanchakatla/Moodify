@@ -9,6 +9,7 @@ interface ImageProviderSchema {
   base64ImageString: string,
   fileName: string | null | undefined,
   contentType : string|undefined,
+  imageFor : "profile"|"emotion"|null
   updatePicture: React.Dispatch<React.SetStateAction<ImageProviderSchema>>
 }
 
@@ -19,6 +20,7 @@ const initialState: ImageProviderSchema = {
   fileName: null,
   width: 0,
   contentType : '',
+  imageFor : null,
   updatePicture: () => { }
 }
 

@@ -9,6 +9,7 @@ export default function RootLayout() {
       <Stack.Screen name='notification' options={{headerShown : false}}/>
       <Stack.Screen name='recentlyPlayed' options={{headerShown : false}}/>
       <Stack.Screen name='musicPlayer' options={{headerShown : false}}/>
+      <Stack.Screen name='explore' options={{headerShown : false}}/>
     </Stack>
   )
 }

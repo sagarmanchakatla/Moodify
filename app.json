@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Moodify",
-    "slug": "Moodify",
+    "slug": "moodify",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -15,7 +15,11 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -71,6 +75,15 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "37682775-137d-49f7-aa18-d75d398a6540"
+      }
+    },
+    "owner": "mr.goku.0619"
   }
 }

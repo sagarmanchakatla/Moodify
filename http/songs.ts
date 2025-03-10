@@ -1,7 +1,8 @@
 import { SongSchema,SearchResultsType } from "@/schema/songSchema";
 import axios from "axios";
+import { env } from "@/constants/data";
 
-const API_KEY = process.env.EXPO_PUBLIC_GOOGLE_MUSIC_API_KEY_2!; // Replace with your YouTube API key
+const API_KEY = env.musicApiKeyTwo; // Replace with your YouTube API key
 const BASE_URL = "https://www.googleapis.com/youtube/v3";
 
 const formatVideoToSong = (video:any):SongSchema => ({

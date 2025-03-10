@@ -47,7 +47,11 @@ import greyBackgroundicon from  "@/assets/icons/greyBackground.png"
 import playBtnicon from "@/assets/icons/PlayBtn.png"
 import pauseicon from "@/assets/icons/pauseIcon.png"
 import otpicon from "@/assets/icons/otpicon.png"
-
+import exploreicon from "@/assets/icons/explore.png"
+import historyicon from "@/assets/icons/history.png"
+import notificationMenuicon from "@/assets/icons/notificationMenu.png"
+import logoutMenuicon from "@/assets/icons/logoutMunu.png"
+import locationPointericon from "@/assets/icons/locationPointer.png"
 
 export default{
     Calandericon,
@@ -98,5 +102,10 @@ export default{
     lightpinkBackgroundicon,
     playBtnicon,
     pauseicon,
-    otpicon
+    otpicon,
+    exploreicon,
+    historyicon,
+    notificationMenuicon,
+    logoutMenuicon,
+    locationPointericon
 }
