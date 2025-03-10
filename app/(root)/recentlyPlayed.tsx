@@ -1,20 +1,22 @@
-import DashBoardHeader from '@/components/dashBoardHeader';
-import React from 'react';
-import { View } from 'react-native';
-import { recentPlayedSongs } from '@/constants/data';
-import RecentlyPlayedList from '@/components/RecentlyPlayedList';
-import RecentlyPlayedHeader from '@/components/RecentlyPayedHeader';
+import DashBoardHeader from "@/components/dashBoardHeader";
+import React from "react";
+import { View } from "react-native";
+import { recentPlayedSongs } from "@/constants/data";
+import RecentlyPlayedList from "@/components/LikedPlayedList";
+// import RecentlyPlayedHeader from "@/components/RecentlyPayedHeader";
+import LikedPlayedList from "@/components/LikedPlayedList";
+import LikedPlayedHeader from "@/components/LikedPlayedHeader";
 
 const RecentlyPlayedScreen: React.FC = () => {
   return (
     <View className="flex-1 bg-white">
-      <DashBoardHeader title='Recently Played' />
+      <DashBoardHeader title="Recently Played" />
       <View className="my-3">
-        <RecentlyPlayedHeader time={"Today"} />
+        <LikedPlayedHeader time={"Today"} />
         <RecentlyPlayedList items={recentPlayedSongs} />
       </View>
       <View className="my-3">
-        <RecentlyPlayedHeader time={"Yesterday"} />
+        <LikedPlayedHeader time={"Yesterday"} />
         <RecentlyPlayedList items={recentPlayedSongs} />
       </View>
     </View>
@@ -22,4 +24,3 @@ const RecentlyPlayedScreen: React.FC = () => {
 };
 
 export default RecentlyPlayedScreen;
-
