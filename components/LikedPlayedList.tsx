@@ -39,7 +39,7 @@ const LikedPlayedList: React.FC<RecentlyPlayedListProps> = ({
 
   return (
     <>
-      <View className="flex-row justify-between  mb-2">
+      <View className="flex-row justify-between mt-10 mb-2">
         <Text className="text-lg font-Popping-Bold ">Liked Songs</Text>
         <TouchableOpacity onPress={() => router.push("/(root)/likedSongs")}>
           <Text className="text-md text-primarygray">See more</Text>
@@ -49,12 +49,12 @@ const LikedPlayedList: React.FC<RecentlyPlayedListProps> = ({
         {likedSongs.length === 0 ? (
           <Text className="text-gray-500">No liked songs found.</Text>
         ) : (
-          likedSongs.map((song, index) => (
+          likedSongs.slice(0, 3).map((song, index) => (
             <TouchableOpacity
               key={song.song_id ? song.song_id.toString() : `song-${index}`}
-              className="w-full my-2"
+              className="flex-1 w-full h-full"
             >
-              <View className="flex flex-row items-center  p-4 rounded-lg">
+              <View className="flex flex-row items-center  p-4 rounded-lg ">
                 <Image
                   source={{ uri: song.song_thumbnail }}
                   className="w-16 h-16 rounded-lg"

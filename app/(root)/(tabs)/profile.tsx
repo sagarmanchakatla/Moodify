@@ -19,6 +19,14 @@ import DashBoardLayout from "@/components/DashBoardLayout";
 import useUserProvider from "@/hook/useUserProvider";
 import useImageProvider from "@/hook/useImageProvider";
 
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+const genAI = new GoogleGenerativeAI(
+  process.env.EXPO_PUBLIC_GOOGLE_GEMINI_API_KEY || ""
+);
+
+const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+
 interface User {
   first_name: string;
   last_name: string;
@@ -42,13 +50,62 @@ const ProfileScreen: React.FC = () => {
   const { displayNameForUser, user } = useUserProvider();
   const { pickImage, uri, fileName } = useImageProvider();
   const [musicTaste, setMusicTaste] = useState("");
+  const [musicInfo, setMusicInfo] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const prompt = `Given the following information about the user's favorite artists and preferred genres:
+  - Favorite Artists: ${user?.fav_artist.split("-").join(", ")}
+  - Preferred Genres: ${user?.genre.split("-").join(", ")}
+
+  Provide a short description of the user's music taste in the following format:
+  "I enjoy [music taste description]". 
+
+  Also, classify the user's music preferences into the following categories and provide the percentage for each:
+  - Workout Music
+  - Relaxation
+  - Focus
+
+  Return the output in the following JSON format:
+  {
+    "musicTaste": "I enjoy [music taste description]",
+    "workoutMusic": ,
+    "relaxation": ,
+    "focus": 
+  }`;
 
   useEffect(() => {
-    // Simulate fetching music taste data
-    setMusicTaste(
-      "I enjoy upbeat music that energizes me during workouts. I prefer songs with strong beats and motivational lyrics. My playlist is a mix of pop, hip-hop, and electronic dance music that keeps me moving."
-    );
-  }, []);
+    const fetchMusicTaste = async () => {
+      setIsLoading(true);
+      setError("");
+      try {
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        const text = response.text();
+
+        // Extract JSON from the response (remove Markdown code block syntax)
+        const jsonStart = text.indexOf("{");
+        const jsonEnd = text.lastIndexOf("}") + 1;
+        const jsonString = text.slice(jsonStart, jsonEnd);
+
+        // Parse the JSON string
+        const musicIn = JSON.parse(jsonString);
+        setMusicInfo(musicIn);
+        setMusicTaste(musicIn.musicTaste); // Set the music taste description
+        console.log(musicInfo);
+      } catch (error) {
+        console.error("Failed to fetch music taste:", error);
+        setError("Failed to fetch music taste.");
+        setMusicTaste("I enjoy a variety of music genres and artists."); // Fallback description
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (user?.fav_artist && user?.genre) {
+      fetchMusicTaste();
+    }
+  }, [user?.fav_artist, user?.genre]);
 
   const toggleSwitch = () => setNotificationEnabled((prev) => !prev);
   const handleEdit = async () => {
@@ -240,9 +297,6 @@ const ProfileScreen: React.FC = () => {
                   Music Taste
                 </Text>
               </View>
-              {/* <TouchableOpacity>
-                <Text className="text-blue-500 font-Popping">Edit</Text>
-              </TouchableOpacity> */}
             </View>
 
             <View className="p-4">
@@ -254,48 +308,52 @@ const ProfileScreen: React.FC = () => {
                 <Text className="text-sm font-Popping-Bold text-gray-700 mb-2">
                   Top Listening Activity
                 </Text>
+
+                {/* Workout Music */}
                 <View className="flex-row justify-between items-center mb-1">
                   <Text className="text-xs font-Popping text-gray-500">
                     Workout Music
                   </Text>
                   <Text className="text-xs font-Popping text-gray-500">
-                    65%
+                    {musicInfo?.workoutMusic || 65}%
                   </Text>
                 </View>
                 <View className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
                   <View
                     className="h-full bg-blue-500 rounded-full"
-                    style={{ width: "65%" }}
+                    style={{ width: `${musicInfo?.workoutMusic}%` }}
                   />
                 </View>
 
+                {/* Relaxation */}
                 <View className="flex-row justify-between items-center mt-3 mb-1">
                   <Text className="text-xs font-Popping text-gray-500">
                     Relaxation
                   </Text>
                   <Text className="text-xs font-Popping text-gray-500">
-                    25%
+                    {musicInfo?.relaxation || 25}%
                   </Text>
                 </View>
                 <View className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
                   <View
                     className="h-full bg-green-500 rounded-full"
-                    style={{ width: "25%" }}
+                    style={{ width: `${musicInfo?.relaxation}%` }}
                   />
                 </View>
 
+                {/* Focus */}
                 <View className="flex-row justify-between items-center mt-3 mb-1">
                   <Text className="text-xs font-Popping text-gray-500">
                     Focus
                   </Text>
                   <Text className="text-xs font-Popping text-gray-500">
-                    10%
+                    {musicInfo?.focus || 10}%
                   </Text>
                 </View>
                 <View className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
                   <View
                     className="h-full bg-purple-500 rounded-full"
-                    style={{ width: "10%" }}
+                    style={{ width: `${musicInfo?.focus}%` }}
                   />
                 </View>
               </View>

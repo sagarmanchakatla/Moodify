@@ -4,6 +4,7 @@ import { SongSchema } from "@/schema/songSchema";
 import useSongProvider from "@/hook/useSongProvider";
 import useUserProvider from "@/hook/useUserProvider";
 import useLikeSongProvider from "@/hook/useLikeSongProvider";
+import useHistoryProvider from "@/hook/useHistoryProvider";
 import { LikeSong } from "@/schema/likeSong";
 
 interface SongCardProps {
@@ -16,6 +17,7 @@ export default function SongCard({ songs }: SongCardProps) {
   const [loading, setLoading] = useState(true);
   const { addLikedSong, getLikedSongs, removeSong } = useLikeSongProvider();
   const { user } = useUserProvider();
+  const { addToHistory } = useHistoryProvider();
 
   useEffect(() => {
     // console.log(songs[0]);
@@ -23,6 +25,16 @@ export default function SongCard({ songs }: SongCardProps) {
       fetchLikedSong();
     }
   }, [user]);
+
+  const handleSongPlay = async (index: number) => {
+    setSongPlay(index);
+
+    // Add to history when song is played
+    if (user && songs[index]) {
+      console.log(songs[index]);
+      await addToHistory(user.id, songs[index]);
+    }
+  };
 
   const fetchLikedSong = async () => {
     if (!user?.id) return;
@@ -81,7 +93,7 @@ export default function SongCard({ songs }: SongCardProps) {
         <TouchableOpacity
           key={song.id}
           className="flex-row items-center bg-white shadow-md rounded-lg p-4 mb-4"
-          onPress={() => setSongPlay(index)}
+          onPress={() => handleSongPlay(index)}
         >
           <Image
             source={{ uri: song.thumbnail }}

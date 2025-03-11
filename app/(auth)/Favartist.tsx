@@ -63,7 +63,7 @@ const FavArtistScreen: React.FC = () => {
         setSelectedArtists((prev) => [...prev, artist]);
         setError("");
       } else {
-        setError("You can only select up to 3 artists.");
+        setError("You can only select up to 5 artists.");
       }
     }
   };

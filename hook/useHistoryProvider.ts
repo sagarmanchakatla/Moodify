@@ -21,6 +21,7 @@ export default function useHistoryProvider() {
       {
         "song_name": "name of the song",
         "artist_name": "name of the artist",
+        "song_thumbnail": "thumbnail URL of the song (if available, otherwise empty string)",
         "yt_url": "youtube URL of the song (if available, otherwise empty string)",
         "album_name": "album 1 - album 2 - album 3"
       }
@@ -57,8 +58,8 @@ export default function useHistoryProvider() {
         .from("History")
         .select("*")
         .eq("user_id", userId)
-        .eq("artist_name", songInfo.artist_name)
-        .eq("song_name", songInfo.song_name);
+        .eq("artist_name", songInfo.artist)
+        .eq("song_name", songInfo.title);
 
       if (fetchError) throw fetchError;
 
@@ -72,11 +73,12 @@ export default function useHistoryProvider() {
       const { error: insertError } = await supabase.from("History").insert([
         {
           user_id: userId,
-          song_name: songInfo.song_name,
-          artist_name: songInfo.artist_name,
-          yt_url: songInfo.yt_url,
-          album_name: songInfo.album_name,
-          searched_at: songInfo.searched_at.toISOString(),
+          song_name: songInfo.title,
+          artist_name: songInfo.artist,
+          yt_url: songInfo.url,
+          song_thumbnail: songInfo.thumbnail,
+          album_name: songInfo.album_name || "",
+          searched_at: new Date().toString(),
         },
       ]);
 

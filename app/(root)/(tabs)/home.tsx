@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Image,
   ImageBackground,
+  Button,
 } from "react-native";
 import Feather from "@expo/vector-icons/Feather";
 import DashBoardLayout from "@/components/DashBoardLayout";
@@ -16,13 +17,28 @@ import { recentPlayedSongs } from "@/constants/data";
 import { router } from "expo-router";
 import useUserProvider from "@/hook/useUserProvider";
 import useSongProvider from "@/hook/useSongProvider";
-
+import useHistoryProvider from "@/hook/useHistoryProvider";
 import LikedPlayedList from "@/components/LikedPlayedList";
+import HistoryComponent from "@/components/HistoryComponent";
 
 const HomeScreen = () => {
-  const { displayNameForUser } = useUserProvider();
+  const { displayNameForUser, user } = useUserProvider();
   const [search, setSearch] = useState<string>();
   const { fetchSearchQuery } = useSongProvider();
+  const { getHistory } = useHistoryProvider();
+  const [history, setHistory] = useState<any[]>([]); // State to store history data
+
+  useEffect(() => {
+    const fetchHistory = async () => {
+      if (user?.id) {
+        const historyData = await getHistory(user.id);
+        setHistory(historyData);
+        console.log(history);
+      }
+    };
+
+    fetchHistory();
+  }, [user?.id]);
 
   const handleSearch = () => {
     if (search) {
@@ -30,6 +46,7 @@ const HomeScreen = () => {
       router.push("/(root)/(tabs)/playlist");
     }
   };
+
   return (
     <DashBoardLayout>
       <View className="flex-1 bg-white px-4 py-6">
@@ -107,11 +124,14 @@ const HomeScreen = () => {
             <PopularPlayListName reverse />
           </View>
         </View>
-        <Text className="font-Popping-Bold text-xl">
+
+        {/* <Text className="font-Popping-Bold text-xl mt-5 mb-5">
           Looking for Something New
         </Text>
 
-        <BannerComponent />
+        <BannerComponent /> */}
+
+        <HistoryComponent history={history} />
 
         {/* <LikedPlayedHeader time="Recently Play" /> */}
         <LikedPlayedList items={recentPlayedSongs} icon={icons.smallplayicon} />
