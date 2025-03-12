@@ -20,6 +20,7 @@ import useSongProvider from "@/hook/useSongProvider";
 import useHistoryProvider from "@/hook/useHistoryProvider";
 import LikedPlayedList from "@/components/LikedPlayedList";
 import HistoryComponent from "@/components/HistoryComponent";
+import GeneratePlaylist from "@/components/GeneratePlaylist";
 
 const HomeScreen = () => {
   const { displayNameForUser, user } = useUserProvider();
@@ -109,6 +110,7 @@ const HomeScreen = () => {
         </View>
 
         <TopTenSongs />
+        <GeneratePlaylist />
 
         {/* Popular Playlists */}
         <View className="mt-6">

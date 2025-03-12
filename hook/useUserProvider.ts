@@ -307,6 +307,21 @@ const useUserProvider = () => {
     }));
   };
 
+  const storeMood = async (mood: string) => {
+    try {
+      const { error } = await supabase
+        .from("UsersProfile")
+        .update({ curr_mood: mood })
+        .eq("id", user?.id);
+      if (error) {
+        console.log("Error adding mood in users table", error);
+        throw Error(error.message ?? error.cause);
+      }
+    } catch (error) {
+      console.log("Error adding mood in users table", error);
+    }
+  };
+
   return {
     isAuthenticated,
     user,
@@ -321,6 +336,7 @@ const useUserProvider = () => {
     validateOTP,
     setUserLocation,
     singInWithEmailAndPassword,
+    storeMood,
   };
 };
 
