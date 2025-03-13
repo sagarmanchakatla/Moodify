@@ -1,3 +1,4 @@
+import React, { useState, useEffect, useMemo } from "react";
 import {
   View,
   Text,
@@ -9,9 +10,8 @@ import {
   ActivityIndicator,
   RefreshControl,
   Dimensions,
-  Platform,
+  FlatList,
 } from "react-native";
-import React, { useState, useEffect } from "react";
 import { router } from "expo-router";
 import usePlaylistProvider from "@/hook/usePlaylistProvider";
 import useUserProvider from "@/hook/useUserProvider";
@@ -23,17 +23,8 @@ import DashBoardLayout from "@/components/DashBoardLayout";
 import DashBoardHeader from "@/components/dashBoardHeader";
 import { BlurView } from "expo-blur";
 
-interface Playlist {
-  id: string;
-  name: string;
-  description: string | null;
-  thumbnail: string | null;
-  created_at: string;
-  Playlist_songs: { count: number }[];
-}
-
 const { width } = Dimensions.get("window");
-const CARD_WIDTH = width / 2 - 24; // Adjust for padding and gap
+const CARD_WIDTH = width / 2 - 24;
 
 const GeneratePlaylist = () => {
   const [showModal, setShowModal] = useState(false);
@@ -43,18 +34,51 @@ const GeneratePlaylist = () => {
   const [uploadLoading, setUploadLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { createPlaylist, loading, getUsersPlaylists } = usePlaylistProvider();
-
   const { user } = useUserProvider();
-
-  const [playlists, setPlaylists] = useState<Playlist[]>([]);
+  const [playlists, setPlaylists] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [loadingPlaylists, setLoadingPlaylists] = useState(true);
+  const [generatedPlaylists, setGeneratedPlaylists] = useState<any>(null); // State for generated playlists
+  const [showGeneratedPlaylistModal, setShowGeneratedPlaylistModal] =
+    useState(false); // State for modal visibility
+  const [selectedPlaylist, setSelectedPlaylist] = useState<any>(null); // State for selected playlist
+  const [generatingPlaylist, setGeneratingPlaylist] = useState(false);
 
   useEffect(() => {
     if (user) {
       fetchPlaylists();
     }
   }, [user]);
+
+  const generatePlaylist = async () => {
+    if (!user) return;
+
+    setGeneratingPlaylist(true); // Start loading
+    try {
+      const response = await fetch(
+        "http://192.168.0.104:5000/generate_playlists",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            mood: user?.curr_mood,
+            artists: user?.fav_artist.split("-"),
+            genres: user?.genre.split("-"),
+          }),
+        }
+      );
+      const result = await response.json();
+      console.log("Result of AI", result);
+      setGeneratedPlaylists(result); // Store the generated playlists
+    } catch (error) {
+      console.error("Error generating playlist:", error);
+      setError("Failed to generate playlist. Please try again.");
+    } finally {
+      setGeneratingPlaylist(false); // Stop loading
+    }
+  };
 
   const fetchPlaylists = async () => {
     if (!user?.id) return;
@@ -90,7 +114,6 @@ const GeneratePlaylist = () => {
         const base64File = result.assets[0].base64;
         const filePath = `playlist-covers/${user?.id}/${Date.now()}.jpg`;
 
-        // Upload to Supabase Storage
         const { data: uploadData, error: uploadError } = await supabase.storage
           .from("playlist-covers")
           .upload(filePath, decode(base64File), {
@@ -103,7 +126,6 @@ const GeneratePlaylist = () => {
           return;
         }
 
-        // Get public URL
         const {
           data: { publicUrl },
         } = supabase.storage.from("playlist-covers").getPublicUrl(filePath);
@@ -163,36 +185,126 @@ const GeneratePlaylist = () => {
     </View>
   );
 
-  const getSongCountText = (playlist: Playlist) => {
+  const getSongCountText = (playlist) => {
     const count = playlist?.Playlist_songs?.[0]?.count || 0;
     return count === 1 ? "1 song" : `${count} songs`;
   };
+
+  const renderGeneratedPlaylistModal = () => (
+    <Modal
+      visible={showGeneratedPlaylistModal}
+      transparent
+      animationType="slide"
+      onRequestClose={() => setShowGeneratedPlaylistModal(false)}
+    >
+      <View className="flex-1 justify-end bg-black/50">
+        <View
+          className="bg-white rounded-t-3xl p-6"
+          style={{
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: -2 },
+            shadowOpacity: 0.2,
+            shadowRadius: 8,
+            elevation: 10,
+          }}
+        >
+          <View className="flex-row justify-between items-center mb-6">
+            <Text className="text-xl font-Popping-Bold">
+              {selectedPlaylist?.genre}
+            </Text>
+            <TouchableOpacity
+              onPress={() => setShowGeneratedPlaylistModal(false)}
+              className="p-2"
+            >
+              <Feather name="x" size={24} color="#444" />
+            </TouchableOpacity>
+          </View>
+
+          <FlatList
+            data={selectedPlaylist?.songs || []}
+            keyExtractor={(item) => item.youtube_url}
+            renderItem={({ item }) => (
+              <View className="flex-row items-center justify-between p-3 border-b border-gray-100">
+                <Image
+                  source={{ uri: item.thumbnail_url }}
+                  className="w-12 h-12 rounded-lg"
+                />
+                <View className="flex-1 ml-3">
+                  <Text className="text-gray-700 font-Popping-Medium">
+                    {item.track_name}
+                  </Text>
+                  <Text className="text-gray-500 font-Popping">
+                    {item.track_artist}
+                  </Text>
+                </View>
+                <TouchableOpacity
+                  onPress={() => router.push(item.youtube_url)}
+                  className="p-2"
+                >
+                  <Feather name="play" size={18} color="#EF4444" />
+                </TouchableOpacity>
+              </View>
+            )}
+            ListEmptyComponent={
+              <Text className="text-gray-500 text-center font-Popping">
+                No songs in this playlist.
+              </Text>
+            }
+          />
+        </View>
+      </View>
+    </Modal>
+  );
 
   return (
     <DashBoardLayout>
       <DashBoardHeader title="Your Playlists" />
       <View className="flex-1 bg-white px-4">
-        {/* Create Playlist Button */}
         {playlists.length > 0 && (
-          <TouchableOpacity
-            className="bg-red-500 py-3 px-6 rounded-full mb-6 mt-4 self-center flex-row items-center shadow-md"
-            onPress={() => setShowModal(true)}
-            style={{
-              shadowColor: "#EF4444",
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.3,
-              shadowRadius: 6,
-              elevation: 6,
-            }}
-          >
-            <Feather name="plus" size={18} color="white" />
-            <Text className="text-white text-center font-Popping-SemiBold ml-2">
-              Create New Playlist
-            </Text>
-          </TouchableOpacity>
+          <View className="flex-row justify-center space-x-4 mb-6 mt-4">
+            <TouchableOpacity
+              className="bg-red-500 py-3 px-6 rounded-full flex-row items-center shadow-md"
+              onPress={() => setShowModal(true)}
+              style={{
+                shadowColor: "#EF4444",
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.3,
+                shadowRadius: 6,
+                elevation: 6,
+              }}
+            >
+              <Feather name="plus" size={18} color="white" />
+              <Text className="text-white text-center font-Popping-SemiBold ml-2">
+                Create New Playlist
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              className="bg-blue-500 py-3 px-6 rounded-full flex-row items-center shadow-md"
+              onPress={generatePlaylist}
+              disabled={generatingPlaylist}
+              style={{
+                shadowColor: "#3B82F6",
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.3,
+                shadowRadius: 6,
+                elevation: 6,
+              }}
+            >
+              {generatingPlaylist ? (
+                <ActivityIndicator size="small" color="white" />
+              ) : (
+                <>
+                  <Feather name="refresh-cw" size={18} color="white" />
+                  <Text className="text-white text-center font-Popping-SemiBold ml-2">
+                    Generate Playlist
+                  </Text>
+                </>
+              )}
+            </TouchableOpacity>
+          </View>
         )}
 
-        {/* Playlists Grid */}
         {loadingPlaylists ? (
           <View className="flex-1 justify-center items-center">
             <ActivityIndicator size="large" color="#EF4444" />
@@ -220,10 +332,11 @@ const GeneratePlaylist = () => {
                     key={playlist.id}
                     className="mb-6 overflow-hidden"
                     style={{ width: CARD_WIDTH }}
-                    onPress={() => router.push(`(root)/playlist/${playlist.id}`)}
+                    onPress={() =>
+                      router.push(`(root)/playlist/${playlist.id}`)
+                    }
                     activeOpacity={0.8}
                   >
-                    {/* Playlist Cover with gradient overlay */}
                     <View className="relative">
                       <Image
                         source={{
@@ -235,8 +348,6 @@ const GeneratePlaylist = () => {
                         style={{ height: CARD_WIDTH }}
                         resizeMode="cover"
                       />
-
-                      {/* Overlay gradient effect */}
                       <View
                         className="absolute bottom-0 left-0 right-0 h-20 rounded-b-2xl overflow-hidden"
                         style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
@@ -253,8 +364,6 @@ const GeneratePlaylist = () => {
                           </Text>
                         </View>
                       </View>
-
-                      {/* Play icon overlay */}
                       <View
                         className="absolute top-0 right-0 m-2 bg-black/40 p-2 rounded-full"
                         style={{ backdropFilter: "blur(5px)" }}
@@ -269,7 +378,39 @@ const GeneratePlaylist = () => {
           </ScrollView>
         )}
 
-        {/* Create Playlist Modal with improved UI */}
+        {/* Display Generated Playlists */}
+        {generatedPlaylists && (
+          <View className="mt-6">
+            <Text className="text-xl font-Popping-Bold mb-4">
+              Generated Playlists
+            </Text>
+            {Object.entries(generatedPlaylists).map(([genre, playlist]) => (
+              <TouchableOpacity
+                key={genre}
+                className="bg-gray-100 p-4 rounded-xl mb-4"
+                onPress={() => {
+                  setSelectedPlaylist({ genre, ...playlist });
+                  setShowGeneratedPlaylistModal(true);
+                }}
+              >
+                <Image
+                  source={{ uri: playlist.playlist_thumbnail }}
+                  className="w-full h-40 rounded-lg mb-2"
+                  resizeMode="cover"
+                />
+                <Text className="text-gray-700 font-Popping-Bold">{genre}</Text>
+                <Text className="text-gray-500 font-Popping">
+                  {playlist.songs.length} songs
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
+
+        {/* Modal for Generated Playlist */}
+        {renderGeneratedPlaylistModal()}
+
+        {/* Modal for Creating Playlist */}
         <Modal
           visible={showModal}
           transparent
@@ -314,7 +455,6 @@ const GeneratePlaylist = () => {
                 </View>
               )}
 
-              {/* Thumbnail Upload Section with better styling */}
               <View className="items-center mb-6">
                 <TouchableOpacity
                   onPress={pickImage}
@@ -372,7 +512,6 @@ const GeneratePlaylist = () => {
                 </TouchableOpacity>
               </View>
 
-              {/* Form fields with better styling */}
               <Text className="text-gray-700 font-Popping-Medium mb-2 ml-1">
                 Playlist Name*
               </Text>
@@ -400,7 +539,6 @@ const GeneratePlaylist = () => {
                 placeholderTextColor="#9CA3AF"
               />
 
-              {/* Action buttons */}
               <TouchableOpacity
                 className={`p-4 rounded-xl mb-3 flex-row justify-center items-center ${
                   loading || uploadLoading ? "bg-gray-400" : "bg-red-500"
