@@ -31,7 +31,7 @@ export default function EmotionDetect() {
   const [emotion, setEmotion] = useState<string>("");
 
   const { fetchSearchQuery } = useSongProvider();
-  const { displayNameForUser, user } = useUserProvider();
+  const { displayNameForUser, user, storeMood } = useUserProvider();
 
   const emotionEmojis = {
     happy: "😄",
@@ -91,8 +91,10 @@ export default function EmotionDetect() {
       setEmotionData(data);
       const detectedEmotion = getEmotionResult(data.faces[0]?.emotion);
       setEmotion(detectedEmotion);
-      console.log(detectedEmotion);
-      console.log(user);
+      // console.log(detectedEmotion);
+      // console.log(typeof detectedEmotion);
+      await storeMood(detectedEmotion);
+      // console.log(user);
     } catch (error) {
       setError(true);
       console.error("Error detecting emotion:", error);
@@ -176,7 +178,7 @@ export default function EmotionDetect() {
             <Text className="font-Popping-SemiBold">Switch Camera</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={()=>pickImage("emotion")}
+            onPress={() => pickImage("emotion")}
             className="flex-1 p-4 bg-red-200 rounded-lg items-center"
           >
             <Text className="font-Popping-SemiBold">Pick From Gallery</Text>

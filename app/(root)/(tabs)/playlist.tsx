@@ -76,10 +76,10 @@ export default function PlaylistsPage() {
   const handleSearch = async () => {
     if (search) {
       fetchSearchQuery(search);
-      const songInfo = await processSearchQuery(search);
-      if (songInfo) {
-        await addToHistory(user?.id, songInfo);
-      }
+      // const songInfo = await processSearchQuery(search);
+      // if (songInfo) {
+      //   await addToHistory(user?.id, songInfo);
+      // }
       router.push("/(root)/(tabs)/playlist");
     }
   };

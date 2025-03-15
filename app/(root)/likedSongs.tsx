@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { View, Text, Image, TouchableOpacity, FlatList } from "react-native";
+import { View, Text, Image, TouchableOpacity, ScrollView } from "react-native";
 import useUserProvider from "@/hook/useUserProvider";
 import useLikeSongProvider from "@/hook/useLikeSongProvider";
 import { LikeSong } from "@/schema/likeSong";
+import Feather from "@expo/vector-icons/Feather";
 
 const LikedSongsScreen: React.FC = () => {
   const [likedSongs, setLikedSongs] = useState<LikeSong[]>([]);
@@ -29,38 +30,66 @@ const LikedSongsScreen: React.FC = () => {
   };
 
   return (
-    <View className="flex-1 p-4">
-      <Text className="text-black text-2xl font-bold mb-4">Liked Songs</Text>
+    <View className="flex-1 bg-white px-4 py-6">
+      {/* Header */}
+      <View className="flex-row justify-between items-center mb-4">
+        <Text className="text-black text-2xl font-Popping-Bold">
+          Liked Songs
+        </Text>
+      </View>
 
       {loading ? (
         <Text className="text-gray-500">Loading...</Text>
       ) : likedSongs.length === 0 ? (
         <Text className="text-gray-500">No liked songs found.</Text>
       ) : (
-        <FlatList
-          data={likedSongs}
-          keyExtractor={(item) => item.song_id?.toString() || item.song_url}
-          renderItem={({ item }) => (
-            <View className="flex flex-row items-center  p-4 rounded-lg my-2">
+        <ScrollView>
+          {likedSongs.map((item) => (
+            <TouchableOpacity
+              key={item.song_id?.toString() || item.song_url}
+              className="flex-row items-center bg-gray-50 rounded-lg p-3 mb-4 shadow-sm"
+            >
+              {/* Album Art */}
               <Image
                 source={{ uri: item.song_thumbnail }}
                 className="w-16 h-16 rounded-lg"
               />
+
+              {/* Song and Artist Details */}
               <View className="ml-4 flex-1">
-                <Text className="text-black text-lg font-semibold">
+                <Text
+                  className="text-black font-Popping-SemiBold text-lg"
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                >
                   {item.song_title}
                 </Text>
-                <Text className="text-gray-400">{item.song_artist}</Text>
+                <Text
+                  className="text-gray-500 font-Popping text-sm"
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                >
+                  {item.song_artist}
+                </Text>
+                <Text
+                  className="text-gray-500 font-Popping text-sm"
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                >
+                  {item.album_name || "Unknown Album"}
+                </Text>
               </View>
+
+              {/* Remove Button */}
               <TouchableOpacity
                 onPress={() => handleRemoveSong(item)}
-                className="ml-2 px-4 py-2 bg-red-500 rounded-lg"
+                className="p-2"
               >
-                <Text className="text-white">Remove</Text>
+                <Feather name="trash-2" size={24} color="red" />
               </TouchableOpacity>
-            </View>
-          )}
-        />
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
       )}
     </View>
   );
