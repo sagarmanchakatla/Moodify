@@ -19,7 +19,9 @@ const initialState:UserContextType = {
     avatar : "",
     fav_artist: "",
     latitude : null,
-    longitude : null
+    longitude : null,
+    curr_mood : '',
+    pushToken : ''
   },
   updateState : ()=>{}
 }

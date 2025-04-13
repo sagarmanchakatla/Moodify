@@ -33,7 +33,7 @@ export default function SignupScreen() {
   });
 
   const onSubmit = handleSubmit((formData: RegisterFormType) => {
-    if(isValid){
+    if (isValid) {
       singUpUser(formData);
       router.replace("/(auth)/Completeprofile")
     }

@@ -14,7 +14,8 @@ interface ProfileMatchProps {
         fav_artist: string;
         genre: string;
         avatar: string;
-        id: string
+        id: string,
+        pushToken: string,
     };
 }
 
@@ -26,11 +27,11 @@ const ProfileMatch: React.FC<ProfileMatchProps> = ({ otherUser }) => {
     ).toFixed(2);
     const meItself = otherUser.id === user?.id;
 
-    const handleNotification = async (payload:{ userId: string, title: string, description: string })=>{
-        try{
-            await sendFriendRequest(user?.id!,otherUser.id);
-            await notifyUser(payload);
-        }catch(err){
+    const handleNotification = async (payload: { id: string, to: string, title: string, body: string }) => {
+        try {
+            // await sendFriendRequest(user?.id!,otherUser.id);
+            notifyUser(payload);
+        } catch (err) {
             console.log(err);
             Alert.alert("Can't send the notification! ");
         }
@@ -59,8 +60,8 @@ const ProfileMatch: React.FC<ProfileMatchProps> = ({ otherUser }) => {
                 <TouchableOpacity className="bg-blue-500 px-4 py-2 rounded-full">
                     <Text className="text-white font-semibold">You</Text>
                 </TouchableOpacity>
-                    : 
-                <TouchableOpacity onPress={()=>handleNotification({userId:otherUser.id,description:`Hi there I am ${user!.first_name} let's chat on moodify while sharing the tracks togeather😊`,title:"Let's Chat togeather"})} className="bg-blue-500 px-4 py-2 rounded-full">
+                :
+                <TouchableOpacity onPress={() => handleNotification({ id: otherUser.id, to: otherUser.pushToken, body: `Hi there I am ${user!.first_name} let's chat on moodify while sharing the tracks togeather😊`, title: "Let's Chat togeather" })} className="bg-blue-500 px-4 py-2 rounded-full">
                     <Text className="text-white font-semibold">Add to Friend</Text>
                 </TouchableOpacity>
             }

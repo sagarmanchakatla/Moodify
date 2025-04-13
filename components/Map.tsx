@@ -6,7 +6,7 @@ import useUserProvider from '@/hook/useUserProvider';
 import { mapStyle } from '@/constants';
 import icons from '@/constants/icons';
 import useSWR from 'swr';
-import { getAllUserInfo } from '@/http/notificationhttp';
+import { getAllUserInfo } from '@/http/usershttp';
 import ProfileMatch from './ProfileMatch';
 
 
@@ -32,6 +32,7 @@ export default function Map() {
     fav_artist: string;
     genre: string;
     avatar: string;
+    pushToken : string,
     id : string
   } => {
     return {
@@ -40,7 +41,8 @@ export default function Map() {
       avatar : "",
       first_name : data![selectedTap!].first_name,
       last_name : data![selectedTap!].last_name,
-      id : data![selectedTap!].id
+      id : data![selectedTap!].id,
+      pushToken : data![selectedTap!].pushToken
     }
   }
 
