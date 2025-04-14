@@ -24,11 +24,10 @@ import GeneratePlaylist from "@/components/GeneratePlaylist";
 
 const HomeScreen = () => {
   const { displayNameForUser, user } = useUserProvider();
-  const [search, setSearch] = useState<string>();
   const { fetchSearchQuery } = useSongProvider();
   const { getHistory } = useHistoryProvider();
-  const [history, setHistory] = useState<any[]>([]); // State to store history data
-
+  const [history, setHistory] = useState<any[]>([]); 
+  const [search, setSearch] = useState<string>();
   useEffect(() => {
     const fetchHistory = async () => {
       if (user?.id) {

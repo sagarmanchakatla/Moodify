@@ -4,7 +4,7 @@ import icons from '@/constants/icons'
 
 
 interface CardContantSchema {
-    title: string,
+    title?: string,
     primaryText?: string,
     secondartText?: string,
     component?: ReactNode

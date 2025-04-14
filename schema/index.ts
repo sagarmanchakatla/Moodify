@@ -13,6 +13,9 @@ export interface UserSchema {
   latitude: number | null;
   longitude: number | null;
   curr_mood: string;
+  pushToken : string;
+  invites : string,
+  friends : string
 }
 
 export interface UserContextType {
@@ -36,12 +39,4 @@ export interface PictureType {
   base64Image: string;
   height: number;
   weight: number;
-}
-
-export interface NotificationSchema {
-  date: string;
-  title: string;
-  message: string;
-  notification_id: number;
-  pushData: {};
 }

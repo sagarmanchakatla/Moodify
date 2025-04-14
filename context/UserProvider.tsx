@@ -19,7 +19,11 @@ const initialState:UserContextType = {
     avatar : "",
     fav_artist: "",
     latitude : null,
-    longitude : null
+    longitude : null,
+    curr_mood : '',
+    pushToken : '',
+    invites : '',
+    friends : ''
   },
   updateState : ()=>{}
 }
@@ -70,7 +74,6 @@ const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     };
     fetchAuthenticatedUser();
   }, []);
-
   return (
     <UserContext.Provider value={{...user,updateState : setUser}}>
       {children}

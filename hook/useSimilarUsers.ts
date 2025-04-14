@@ -1,85 +1,31 @@
-import { useState, useEffect, useCallback } from "react";
-import supabase from "@/lib/supabase";
 import useUserProvider from "./useUserProvider";
-import { SimilarUser, UserSchema } from "@/schema";
-import { calculateSimilarityScore } from "@/utils";
+import { SocialTabType } from "@/schema/notificationSchema";
+import useSWR from "swr";
+import { getSocialUsers } from "@/http/usershttp";
 
 
 
 const useSimilarUsers = (similarityThreshold = 0.3) => {
   const { user } = useUserProvider();
-  const [similarUsers, setSimilarUsers] = useState<SimilarUser[]>([]);
-  const [allUsers, setAllUsers] = useState<SimilarUser[]>([]);
+  const {isLoading,data,error,mutate} = useSWR("/socials",()=>getSocialUsers(user!))
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const friendsList = user?.friends?.split("\n");
+  const friendsRequestList = user?.invites?.split("\n");
 
-
-  const fetchSimilarUsers = useCallback(async () => {
-    if (!user) return;
-
-    setLoading(true);
-    setError(null);
-
-    try {
-      // Fetch all users except the current user
-      const { data, error } = await supabase
-        .from("UsersProfile")
-        .select("*")
-        .neq("id", user.id);
-
-      if (error) throw new Error(error.message);
-      if (!data) return;
-
-      // Calculate similarity scores for each user
-      const usersWithScores: SimilarUser[] = data.map(
-        (otherUser: UserSchema) => {
-          const similarity = calculateSimilarityScore(
-            user.genre || "",
-            user.fav_artist || "",
-            otherUser.genre || "",
-            otherUser.fav_artist || ""
-          );
-
-          return {
-            ...otherUser,
-            similarity_score: similarity,
-          };
-        }
-      );
-
-      // Filter users by similarity threshold and sort by similarity score
-      const filteredUsers = usersWithScores
-        .filter((user) => user.similarity_score >= similarityThreshold)
-        .sort((a, b) => b.similarity_score - a.similarity_score);
-
-      setSimilarUsers(filteredUsers);
-      setAllUsers(usersWithScores);
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  }, [user, similarityThreshold]);
-
-  // Fetch similar users when the current user changes
-  useEffect(() => {
-    if (user) {
-      fetchSimilarUsers();
-    }
-  }, [user, fetchSimilarUsers]);
-
-  // Allow manual refresh
-  const refreshSimilarUsers = () => {
-    fetchSimilarUsers();
-  };
+  const getUsersFriendsList = data?.filter(user=>friendsList?.includes(user.id));  
+  const getUsersInvitesList = data?.filter(user=>friendsRequestList?.includes(user.id)); 
+  const similarUsersList = data?.filter(user=>!getUsersFriendsList?.includes(user) && !getUsersInvitesList?.includes(user));
+  
+  const socialUsers:SocialTabType = {
+    friends : getUsersFriendsList!,
+    invites : getUsersInvitesList!,
+    similar : similarUsersList!
+  }
 
   return {
-    similarUsers,
-    allUsers,
-    loading,
+    socialUsers,
+    isLoading,
     error,
-    refreshSimilarUsers,
   };
 };
 

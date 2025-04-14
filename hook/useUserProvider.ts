@@ -8,12 +8,17 @@ import { makeRedirectUri } from "expo-auth-session";
 import * as QueryParams from "expo-auth-session/build/QueryParams";
 import * as WebBrowser from "expo-web-browser";
 import { decode } from "base64-arraybuffer";
-import useNotification from "./useNotification";
+import * as Notifications from "expo-notifications"
 
 const useUserProvider = () => {
-  const { isAuthenticated, updateState, user } =
-    useContext<UserContextType>(UserContext);
-  const { registerUserIdForNotification } = useNotification();
+  const { isAuthenticated, updateState, user } = useContext<UserContextType>(UserContext);
+
+  const generatePushTokenNotification = async ()=>{
+    const response = await Notifications.getExpoPushTokenAsync({
+      projectId : "37682775-137d-49f7-aa18-d75d398a6540"
+    });
+    return response.data;
+  }
 
   const performOAuth = async (provider: "google" | "github" | "facebook") => {
     const redirectTo = makeRedirectUri();
@@ -39,8 +44,7 @@ const useUserProvider = () => {
           console.error("User ID is undefined");
           return;
         }
-        console.log(userId + "in oauth ");
-        await registerUserIdForNotification(userId);
+
         const {
           data: existingUser,
           count,
@@ -49,14 +53,15 @@ const useUserProvider = () => {
           .from("UsersProfile")
           .select("*")
           .eq("id", userId)
-          .single();
-
-        if (count === 0 || error) {
+          .single(); 
+        if (count === 0 || error) {  // new user account storing into db
+          const token = await generatePushTokenNotification();
           const { error: insertError, data: userData } = await supabase
             .from("UsersProfile")
             .insert({
               id: userId,
               first_name: fullName,
+              pushToken : token
             })
             .select("*")
             .single();
@@ -73,7 +78,7 @@ const useUserProvider = () => {
             }));
             router.replace({ pathname: "/(auth)/Completeprofile" });
           }
-        } else if (!error) {
+        } else if (!error) {  // user account is already exists in the db
           updateState((prev) => ({
             ...prev,
             isAuthenticated: true,
@@ -146,9 +151,11 @@ const useUserProvider = () => {
       Alert.alert("Someone is Already register with this credencial !");
       return;
     }
+    const token = await generatePushTokenNotification();
+    console.log(token + " inside the singUpuser")
     const { data: newUser, error: creationError } = await supabase
       .from("UsersProfile")
-      .insert({ id: data.user!.id })
+      .insert({ id: data.user!.id,pushToken:token })
       .select("*")
       .single();
     if (creationError) {
@@ -162,6 +169,7 @@ const useUserProvider = () => {
           id: data.user!.id,
           first_name: userData.first_name,
           last_name: userData.last_name,
+          pushToken : token
         },
       }));
     }
@@ -187,7 +195,6 @@ const useUserProvider = () => {
       if (fetchError) {
         Alert.alert("Can't fetch the your credencials retry again ");
       } else {
-        await registerUserIdForNotification(data.user.id);
         updateState((pre) => ({
           ...pre,
           isAuthenticated: true,
@@ -322,6 +329,8 @@ const useUserProvider = () => {
     }
   };
 
+
+ 
   return {
     isAuthenticated,
     user,
