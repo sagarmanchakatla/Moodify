@@ -21,12 +21,13 @@ import useHistoryProvider from "@/hook/useHistoryProvider";
 import LikedPlayedList from "@/components/LikedPlayedList";
 import HistoryComponent from "@/components/HistoryComponent";
 import GeneratePlaylist from "@/components/GeneratePlaylist";
+import PlaylistComponent from "@/components/PlaylistComponent";
 
 const HomeScreen = () => {
   const { displayNameForUser, user } = useUserProvider();
   const { fetchSearchQuery } = useSongProvider();
   const { getHistory } = useHistoryProvider();
-  const [history, setHistory] = useState<any[]>([]); 
+  const [history, setHistory] = useState<any[]>([]);
   const [search, setSearch] = useState<string>();
   useEffect(() => {
     const fetchHistory = async () => {
@@ -112,19 +113,7 @@ const HomeScreen = () => {
         <GeneratePlaylist />
 
         {/* Popular Playlists */}
-        <View className="mt-6">
-          <View className="flex-row justify-between">
-            <Text className="text-black text-lg font-Popping-Bold">
-              Popular Playlists
-            </Text>
-            <Text className="text-gray-500 font-Popping">See more</Text>
-          </View>
-
-          <View className="mt-4 grid grid-cols-1">
-            <PopularPlayListName />
-            <PopularPlayListName reverse />
-          </View>
-        </View>
+        <PlaylistComponent />
 
         {/* <Text className="font-Popping-Bold text-xl mt-5 mb-5">
           Looking for Something New
@@ -132,10 +121,9 @@ const HomeScreen = () => {
 
         <BannerComponent /> */}
 
-        <HistoryComponent history={history} />
-
         {/* <LikedPlayedHeader time="Recently Play" /> */}
         <LikedPlayedList items={recentPlayedSongs} icon={icons.smallplayicon} />
+        <HistoryComponent history={history} />
       </View>
     </DashBoardLayout>
   );
@@ -168,42 +156,6 @@ const BannerComponent: React.FC = () => {
           </ImageBackground>
         </ImageBackground>
       </ImageBackground>
-    </View>
-  );
-};
-
-const PopularPlayListName: React.FC<{ reverse?: boolean }> = ({ reverse }) => {
-  return (
-    <View
-      className={`flex ${
-        reverse ? "flex-row-reverse" : "flex-row"
-      } rounded-lg mb-4 w-full`}
-    >
-      <Image source={icons.pinkBackgroundicon} className="w-1/2 rounded-lg" />
-
-      <View className="flex flex-col w-1/2 justify-start py-5 px-2 flex-1">
-        <Text
-          className="text-black font-Popping-SemiBold text-lg"
-          numberOfLines={1}
-          ellipsizeMode="tail"
-        >
-          Playlist Name
-        </Text>
-
-        <Text
-          className="text-gray-600 text-md font-Popping"
-          numberOfLines={2}
-          ellipsizeMode="tail"
-        >
-          Songs Count | 20 minutes
-        </Text>
-
-        <Text className="text-gray-600 text-md font-Popping">Likes</Text>
-        <Text className="text-gray-600 text-md font-Popping">Shares</Text>
-        <TouchableOpacity className="mt-2">
-          <Feather name="play-circle" size={24} color="pink" />
-        </TouchableOpacity>
-      </View>
     </View>
   );
 };

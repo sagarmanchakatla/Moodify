@@ -56,7 +56,7 @@ const GeneratePlaylist = () => {
     setGeneratingPlaylist(true); // Start loading
     try {
       const response = await fetch(
-        "http://192.168.0.109:5000/generate_playlists",
+        "http://192.168.0.104:5000/generate_playlists",
         {
           method: "POST",
           headers: {
@@ -182,6 +182,16 @@ const GeneratePlaylist = () => {
           Create Playlist
         </Text>
       </TouchableOpacity>
+      <TouchableOpacity
+        className="bg-blue-500 px-6 py-3 rounded-full mt-6 flex-row items-center"
+        onPress={generatePlaylist}
+        disabled={generatingPlaylist}
+      >
+        <Feather name="refresh-cw" size={18} color="white" />
+        <Text className="text-white text-center font-Popping-SemiBold ml-2">
+          Generate Playlist
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 
@@ -222,7 +232,7 @@ const GeneratePlaylist = () => {
 
           <FlatList
             data={selectedPlaylist?.songs || []}
-            keyExtractor={(item) => item.youtube_url}
+            keyExtractor={(item) => item.track_id}
             renderItem={({ item }) => (
               <View className="flex-row items-center justify-between p-3 border-b border-gray-100">
                 <Image
@@ -327,7 +337,7 @@ const GeneratePlaylist = () => {
               renderEmptyState()
             ) : (
               <View className="flex-row flex-wrap justify-between">
-                {playlists.map((playlist) => (
+                {playlists?.map((playlist) => (
                   <TouchableOpacity
                     key={playlist.id}
                     className="mb-6 overflow-hidden"
@@ -341,7 +351,7 @@ const GeneratePlaylist = () => {
                       <Image
                         source={{
                           uri:
-                            playlist.thumbnail ||
+                            playlist?.thumbnail ||
                             "https://via.placeholder.com/200x200?text=No+Cover",
                         }}
                         className="w-full rounded-2xl"
@@ -357,7 +367,7 @@ const GeneratePlaylist = () => {
                             className="text-white font-Popping-Bold"
                             numberOfLines={1}
                           >
-                            {playlist.name}
+                            {playlist?.name}
                           </Text>
                           <Text className="text-gray-300 font-Popping-Medium text-xs mt-1">
                             {getSongCountText(playlist)}
@@ -394,13 +404,13 @@ const GeneratePlaylist = () => {
                 }}
               >
                 <Image
-                  source={{ uri: playlist.playlist_thumbnail }}
+                  source={{ uri: playlist?.playlist_thumbnail }}
                   className="w-full h-40 rounded-lg mb-2"
                   resizeMode="cover"
                 />
                 <Text className="text-gray-700 font-Popping-Bold">{genre}</Text>
                 <Text className="text-gray-500 font-Popping">
-                  {playlist.songs.length} songs
+                  {playlist?.songs?.length} songs
                 </Text>
               </TouchableOpacity>
             ))}
@@ -578,6 +588,327 @@ const GeneratePlaylist = () => {
         </Modal>
       </View>
     </DashBoardLayout>
+
+    // <DashBoardLayout>
+    //   <DashBoardHeader title="Your Playlists" />
+    //   <View className="flex-1 bg-white px-4">
+    //     {/* Always show the "Generate Playlist" button */}
+    //     <View className="flex-row justify-center space-x-4 mb-6 mt-4">
+    //       <TouchableOpacity
+    //         className="bg-red-500 py-3 px-6 rounded-full flex-row items-center shadow-md"
+    //         onPress={() => setShowModal(true)}
+    //         style={{
+    //           shadowColor: "#EF4444",
+    //           shadowOffset: { width: 0, height: 4 },
+    //           shadowOpacity: 0.3,
+    //           shadowRadius: 6,
+    //           elevation: 6,
+    //         }}
+    //       >
+    //         <Feather name="plus" size={18} color="white" />
+    //         <Text className="text-white text-center font-Popping-SemiBold ml-2">
+    //           Create New Playlist
+    //         </Text>
+    //       </TouchableOpacity>
+
+    //       <TouchableOpacity
+    //         className="bg-blue-500 py-3 px-6 rounded-full flex-row items-center shadow-md"
+    //         onPress={generatePlaylist}
+    //         disabled={generatingPlaylist}
+    //         style={{
+    //           shadowColor: "#3B82F6",
+    //           shadowOffset: { width: 0, height: 4 },
+    //           shadowOpacity: 0.3,
+    //           shadowRadius: 6,
+    //           elevation: 6,
+    //         }}
+    //       >
+    //         {generatingPlaylist ? (
+    //           <ActivityIndicator size="small" color="white" />
+    //         ) : (
+    //           <>
+    //             <Feather name="refresh-cw" size={18} color="white" />
+    //             <Text className="text-white text-center font-Popping-SemiBold ml-2">
+    //               Generate Playlist
+    //             </Text>
+    //           </>
+    //         )}
+    //       </TouchableOpacity>
+    //     </View>
+
+    //     {loadingPlaylists ? (
+    //       <View className="flex-1 justify-center items-center">
+    //         <ActivityIndicator size="large" color="#EF4444" />
+    //       </View>
+    //     ) : (
+    //       <ScrollView
+    //         className="flex-1"
+    //         refreshControl={
+    //           <RefreshControl
+    //             refreshing={refreshing}
+    //             onRefresh={onRefresh}
+    //             colors={["#EF4444"]}
+    //             tintColor="#EF4444"
+    //           />
+    //         }
+    //         showsVerticalScrollIndicator={false}
+    //         contentContainerStyle={{ paddingBottom: 40 }}
+    //       >
+    //         {playlists.length === 0 ? (
+    //           renderEmptyState()
+    //         ) : (
+    //           <View className="flex-row flex-wrap justify-between">
+    //             {playlists?.map((playlist) => (
+    //               <TouchableOpacity
+    //                 key={playlist.id}
+    //                 className="mb-6 overflow-hidden"
+    //                 style={{ width: CARD_WIDTH }}
+    //                 onPress={() =>
+    //                   router.push(`(root)/playlist/${playlist.id}`)
+    //                 }
+    //                 activeOpacity={0.8}
+    //               >
+    //                 <View className="relative">
+    //                   <Image
+    //                     source={{
+    //                       uri:
+    //                         playlist?.thumbnail ||
+    //                         "https://via.placeholder.com/200x200?text=No+Cover",
+    //                     }}
+    //                     className="w-full rounded-2xl"
+    //                     style={{ height: CARD_WIDTH }}
+    //                     resizeMode="cover"
+    //                   />
+    //                   <View
+    //                     className="absolute bottom-0 left-0 right-0 h-20 rounded-b-2xl overflow-hidden"
+    //                     style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
+    //                   >
+    //                     <View className="p-3">
+    //                       <Text
+    //                         className="text-white font-Popping-Bold"
+    //                         numberOfLines={1}
+    //                       >
+    //                         {playlist?.name}
+    //                       </Text>
+    //                       <Text className="text-gray-300 font-Popping-Medium text-xs mt-1">
+    //                         {getSongCountText(playlist)}
+    //                       </Text>
+    //                     </View>
+    //                   </View>
+    //                   <View
+    //                     className="absolute top-0 right-0 m-2 bg-black/40 p-2 rounded-full"
+    //                     style={{ backdropFilter: "blur(5px)" }}
+    //                   >
+    //                     <Feather name="play" size={18} color="white" />
+    //                   </View>
+    //                 </View>
+    //               </TouchableOpacity>
+    //             ))}
+    //           </View>
+    //         )}
+    //       </ScrollView>
+    //     )}
+
+    //     {/* Display Generated Playlists */}
+    //     {generatedPlaylists && (
+    //       <View className="mt-6">
+    //         <Text className="text-xl font-Popping-Bold mb-4">
+    //           Generated Playlists
+    //         </Text>
+    //         {Object.entries(generatedPlaylists).map(([genre, playlist]) => (
+    //           <TouchableOpacity
+    //             key={genre}
+    //             className="bg-gray-100 p-4 rounded-xl mb-4"
+    //             onPress={() => {
+    //               setSelectedPlaylist({ genre, ...playlist });
+    //               setShowGeneratedPlaylistModal(true);
+    //             }}
+    //           >
+    //             <Image
+    //               source={{ uri: playlist?.playlist_thumbnail }}
+    //               className="w-full h-40 rounded-lg mb-2"
+    //               resizeMode="cover"
+    //             />
+    //             <Text className="text-gray-700 font-Popping-Bold">{genre}</Text>
+    //             <Text className="text-gray-500 font-Popping">
+    //               {playlist?.songs?.length} songs
+    //             </Text>
+    //           </TouchableOpacity>
+    //         ))}
+    //       </View>
+    //     )}
+
+    //     {/* Modal for Generated Playlist */}
+    //     {renderGeneratedPlaylistModal()}
+
+    //     {/* Modal for Creating Playlist */}
+    //     <Modal
+    //       visible={showModal}
+    //       transparent
+    //       animationType="slide"
+    //       onRequestClose={() => setShowModal(false)}
+    //     >
+    //       <View className="flex-1 justify-end bg-black/50">
+    //         <View
+    //           className="bg-white rounded-t-3xl p-6"
+    //           style={{
+    //             shadowColor: "#000",
+    //             shadowOffset: { width: 0, height: -2 },
+    //             shadowOpacity: 0.2,
+    //             shadowRadius: 8,
+    //             elevation: 10,
+    //           }}
+    //         >
+    //           <View className="flex-row justify-between items-center mb-6">
+    //             <Text className="text-xl font-Popping-Bold">
+    //               Create New Playlist
+    //             </Text>
+    //             <TouchableOpacity
+    //               onPress={() => {
+    //                 setShowModal(false);
+    //                 setThumbnail(null);
+    //                 setPlaylistName("");
+    //                 setDescription("");
+    //                 setError(null);
+    //               }}
+    //               className="p-2"
+    //             >
+    //               <Feather name="x" size={24} color="#444" />
+    //             </TouchableOpacity>
+    //           </View>
+
+    //           {error && (
+    //             <View className="bg-red-100 p-3 rounded-lg mb-4 flex-row items-center">
+    //               <Feather name="alert-circle" size={18} color="#EF4444" />
+    //               <Text className="text-red-600 ml-2 font-Popping-Medium">
+    //                 {error}
+    //               </Text>
+    //             </View>
+    //           )}
+
+    //           <View className="items-center mb-6">
+    //             <TouchableOpacity
+    //               onPress={pickImage}
+    //               disabled={uploadLoading}
+    //               className="relative"
+    //             >
+    //               {thumbnail ? (
+    //                 <View className="relative">
+    //                   <Image
+    //                     source={{ uri: thumbnail }}
+    //                     className="w-40 h-40 rounded-xl"
+    //                     style={{
+    //                       shadowColor: "#000",
+    //                       shadowOffset: { width: 0, height: 2 },
+    //                       shadowOpacity: 0.1,
+    //                       shadowRadius: 4,
+    //                       elevation: 3,
+    //                     }}
+    //                   />
+    //                   <TouchableOpacity
+    //                     className="absolute top-2 right-2 bg-black/60 rounded-full p-2"
+    //                     onPress={() => setThumbnail(null)}
+    //                   >
+    //                     <Feather name="x" size={16} color="white" />
+    //                   </TouchableOpacity>
+
+    //                   <View className="absolute bottom-0 right-0 bg-red-500 rounded-full p-2 m-2">
+    //                     <Feather name="edit-2" size={16} color="white" />
+    //                   </View>
+    //                 </View>
+    //               ) : (
+    //                 <View className="w-40 h-40 bg-gray-100 rounded-xl items-center justify-center border-2 border-dashed border-gray-300">
+    //                   {uploadLoading ? (
+    //                     <View className="items-center">
+    //                       <ActivityIndicator size="small" color="#EF4444" />
+    //                       <Text className="text-gray-500 mt-2 font-Popping-Medium">
+    //                         Uploading...
+    //                       </Text>
+    //                     </View>
+    //                   ) : (
+    //                     <>
+    //                       <View className="bg-gray-200 p-3 rounded-full mb-2">
+    //                         <Feather name="image" size={24} color="#EF4444" />
+    //                       </View>
+    //                       <Text className="text-gray-600 font-Popping-Medium">
+    //                         Add Cover Image
+    //                       </Text>
+    //                       <Text className="text-gray-400 text-xs mt-1 font-Popping">
+    //                         Tap to browse
+    //                       </Text>
+    //                     </>
+    //                   )}
+    //                 </View>
+    //               )}
+    //             </TouchableOpacity>
+    //           </View>
+
+    //           <Text className="text-gray-700 font-Popping-Medium mb-2 ml-1">
+    //             Playlist Name*
+    //           </Text>
+    //           <TextInput
+    //             className="bg-gray-100 p-4 rounded-xl mb-4 font-Popping"
+    //             placeholder="My Awesome Playlist"
+    //             value={playlistName}
+    //             onChangeText={(text) => {
+    //               setPlaylistName(text);
+    //               setError(null);
+    //             }}
+    //             placeholderTextColor="#9CA3AF"
+    //           />
+    //           <Text className="text-gray-700 font-Popping-Medium mb-2 ml-1">
+    //             Description
+    //           </Text>
+    //           <TextInput
+    //             className="bg-gray-100 p-4 rounded-xl mb-6 font-Popping min-h-24"
+    //             placeholder="Write something about this playlist..."
+    //             value={description}
+    //             onChangeText={setDescription}
+    //             multiline
+    //             numberOfLines={3}
+    //             textAlignVertical="top"
+    //             placeholderTextColor="#9CA3AF"
+    //           />
+
+    //           <TouchableOpacity
+    //             className={`p-4 rounded-xl mb-3 flex-row justify-center items-center ${
+    //               loading || uploadLoading ? "bg-gray-400" : "bg-red-500"
+    //             }`}
+    //             onPress={handleCreatePlaylist}
+    //             disabled={loading || uploadLoading}
+    //             style={{
+    //               shadowColor: loading || uploadLoading ? "#666" : "#EF4444",
+    //               shadowOffset: { width: 0, height: 4 },
+    //               shadowOpacity: 0.2,
+    //               shadowRadius: 4,
+    //               elevation: 5,
+    //             }}
+    //           >
+    //             {loading ? (
+    //               <>
+    //                 <ActivityIndicator size="small" color="white" />
+    //                 <Text className="text-white text-center font-Popping-Bold ml-2">
+    //                   Creating...
+    //                 </Text>
+    //               </>
+    //             ) : (
+    //               <>
+    //                 <MaterialIcons
+    //                   name="playlist-add"
+    //                   size={20}
+    //                   color="white"
+    //                 />
+    //                 <Text className="text-white text-center font-Popping-Bold ml-2">
+    //                   Create Playlist
+    //                 </Text>
+    //               </>
+    //             )}
+    //           </TouchableOpacity>
+    //         </View>
+    //       </View>
+    //     </Modal>
+    //   </View>
+    // </DashBoardLayout>
   );
 };
 

@@ -1,10 +1,4 @@
-import {
-  View,
-  Image,
-  Text,
-  ScrollView,
-  TextInput,
-} from "react-native";
+import { View, Image, Text, ScrollView, TextInput } from "react-native";
 import icons from "@/constants/icons";
 import React, { useState, useEffect } from "react";
 import DashBoardLayout from "@/components/DashBoardLayout";
@@ -21,8 +15,12 @@ import SocialCard from "@/components/SocialCard";
 export default function SocialPage() {
   const { socialUsers, isLoading, error } = useSimilarUsers();
   const [search, setSearch] = useState<string>("");
-  const [activeTab, setActiveTab] = useState<'similar' | 'friends' | 'invites'>("friends");
-  const [filteredUsers, setFilteredUsers] = useState<SimilarUser[]>(socialUsers[activeTab]);
+  const [activeTab, setActiveTab] = useState<"similar" | "friends" | "invites">(
+    "friends"
+  );
+  const [filteredUsers, setFilteredUsers] = useState<SimilarUser[]>(
+    socialUsers[activeTab]
+  );
 
   const formatList = (text: string) => {
     return text.split("-").join(", ");
@@ -40,22 +38,20 @@ export default function SocialPage() {
     }
 
     const searchLower = search.toLowerCase();
-    const filtered = (filteredUsers).filter(
-      (user) => {
-        // Add null checks for all properties
-        const firstName = user.first_name || "";
-        const lastName = user.last_name || "";
-        const fullName = `${firstName} ${lastName}`.toLowerCase();
-        const genres = (user.genre || "").toLowerCase();
-        const artists = (user.fav_artist || "").toLowerCase();
+    const filtered = filteredUsers.filter((user) => {
+      // Add null checks for all properties
+      const firstName = user.first_name || "";
+      const lastName = user.last_name || "";
+      const fullName = `${firstName} ${lastName}`.toLowerCase();
+      const genres = (user.genre || "").toLowerCase();
+      const artists = (user.fav_artist || "").toLowerCase();
 
-        return (
-          fullName.includes(searchLower) ||
-          genres.includes(searchLower) ||
-          artists.includes(searchLower)
-        );
-      }
-    );
+      return (
+        fullName.includes(searchLower) ||
+        genres.includes(searchLower) ||
+        artists.includes(searchLower)
+      );
+    });
 
     setFilteredUsers(filtered);
   }, [search, activeTab]);
@@ -85,7 +81,9 @@ export default function SocialPage() {
 
         <SocialTabs activeTab={activeTab} setActiveTab={setActiveTab} />
 
-        <Text className="text-lg font-Popping-SemiBold mb-4 mt-2">{socialTabTitle[activeTab]}</Text>
+        <Text className="text-lg font-Popping-SemiBold mb-4 mt-2">
+          {socialTabTitle[activeTab]}
+        </Text>
 
         <ScrollView className="flex-1">
           {isLoading ? (
@@ -104,19 +102,21 @@ export default function SocialPage() {
                 {search
                   ? "No matching results found"
                   : activeTab === "similar"
-                    ? "No similar music fans found"
-                    : "No music fans found"}
+                  ? "No similar music fans found"
+                  : "No music fans found"}
               </Text>
             </View>
-          ) : <SocialCard tab={activeTab} users={filteredUsers}/>}
+          ) : (
+            <SocialCard tab={activeTab} users={filteredUsers} />
+          )}
         </ScrollView>
       </View>
     </DashBoardLayout>
   );
 }
 
-
-{/* <TouchableOpacity
+{
+  /* <TouchableOpacity
               key={similarUser.id}
               className="mb-4"
               onPress={() => handleUserPress(similarUser.id)}
@@ -140,4 +140,5 @@ export default function SocialPage() {
                   }
                 />
               </DashBoardCard>
-            </TouchableOpacity> */}
+            </TouchableOpacity> */
+}
