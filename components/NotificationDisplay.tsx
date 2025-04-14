@@ -30,7 +30,7 @@ export default function NotificationDisplay() {
       <View className="flex flex-col w-full h-full space-y-4">
         {data!.map((item) => (
           <View className="flex flex-row items-center w-full bg-white p-3 rounded-lg shadow-md" key={item.id}>
-            <AvatarOrDefault uri='' />
+            <AvatarOrDefault uri={item.image} />
             <View className="flex-1 ml-3">
               <Text className="text-lg font-semibold">{item.title}</Text>
               <Text className="text-gray-600 text-sm" numberOfLines={1}>

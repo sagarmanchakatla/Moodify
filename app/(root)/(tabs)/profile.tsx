@@ -20,6 +20,7 @@ import useUserProvider from "@/hook/useUserProvider";
 import useImageProvider from "@/hook/useImageProvider";
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { generatePrompt } from "@/constants";
 
 const genAI = new GoogleGenerativeAI(
   process.env.EXPO_PUBLIC_GOOGLE_GEMINI_API_KEY || ""
@@ -48,31 +49,13 @@ interface ProfilePictureModalProps {
 const ProfileScreen: React.FC = () => {
   const [isNotificationEnabled, setNotificationEnabled] = useState(true);
   const { displayNameForUser, user } = useUserProvider();
-  const { pickImage, uri, fileName } = useImageProvider();
+  const { pickImage, uri, fileName,imageFor } = useImageProvider();
   const [musicTaste, setMusicTaste] = useState("");
   const [musicInfo, setMusicInfo] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const prompt = `Given the following information about the user's favorite artists and preferred genres:
-  - Favorite Artists: ${user?.fav_artist.split("-").join(", ")}
-  - Preferred Genres: ${user?.genre.split("-").join(", ")}
-
-  Provide a short description of the user's music taste in the following format:
-  "I enjoy [music taste description]". 
-
-  Also, classify the user's music preferences into the following categories and provide the percentage for each:
-  - Workout Music
-  - Relaxation
-  - Focus
-
-  Return the output in the following JSON format:
-  {
-    "musicTaste": "I enjoy [music taste description]",
-    "workoutMusic": ,
-    "relaxation": ,
-    "focus": 
-  }`;
+  const prompt = generatePrompt(user?.fav_artist!,user?.genre!);
 
   useEffect(() => {
     const fetchMusicTaste = async () => {
@@ -109,7 +92,7 @@ const ProfileScreen: React.FC = () => {
 
   const toggleSwitch = () => setNotificationEnabled((prev) => !prev);
   const handleEdit = async () => {
-    //await pickImage();
+    await pickImage("profile");
   };
 
   // Define AccountsSetting dynamically based on user data
@@ -398,7 +381,7 @@ const ProfileScreen: React.FC = () => {
           </View>
         </View>
       </ScrollView>
-      <ProfilePictureModal image={uri} show={fileName !== null} />
+      <ProfilePictureModal image={uri} show={fileName !== null && imageFor === "profile"} />
     </DashBoardLayout>
   );
 };
@@ -410,8 +393,7 @@ const ProfilePictureModal: React.FC<ProfilePictureModalProps> = ({
   show,
 }) => {
   const { uploadProfilePicture } = useUserProvider();
-  const { fileName, base64ImageString, resetImage, contentType } =
-    useImageProvider();
+  const { fileName, base64ImageString, resetImage, contentType } = useImageProvider();
 
   const setProfilePicture = async () => {
     await uploadProfilePicture(base64ImageString, contentType!, fileName!);

@@ -13,7 +13,9 @@ export interface UserSchema {
   latitude: number | null;
   longitude: number | null;
   curr_mood: string;
-  pushToken : string
+  pushToken : string;
+  invites : string,
+  friends : string
 }
 
 export interface UserContextType {

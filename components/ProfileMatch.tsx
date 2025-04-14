@@ -29,7 +29,7 @@ const ProfileMatch: React.FC<ProfileMatchProps> = ({ otherUser }) => {
 
     const handleNotification = async (payload: { id: string, to: string, title: string, body: string }) => {
         try {
-            // await sendFriendRequest(user?.id!,otherUser.id);
+            await sendFriendRequest(user?.id!,otherUser.id);
             notifyUser(payload);
         } catch (err) {
             console.log(err);
