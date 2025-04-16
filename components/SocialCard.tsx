@@ -1,35 +1,60 @@
 import { SimilarUser } from '@/schema'
-import { SocialTabType } from '@/schema/notificationSchema'
-import React from 'react'
-import { FlatList, View, Text } from 'react-native'
-import InvitionsCard from './InvitionsCard'
+import React, { useState } from 'react'
+import { View, Text, ScrollView, TextInput, Image } from 'react-native'
+import { socialTabTitle } from '@/constants'
+import icons from '@/constants/icons'
+import { Feather } from '@expo/vector-icons'
+import SocialTabs from './SocialTabs'
 import ProfileMatch from './ProfileMatch'
+import InvitionsCard from './InvitionsCard'
+import FriendsLists from './FriendsLists'
 
-const SocialCard: React.FC<{
-  users: SimilarUser[]
-  tab: keyof SocialTabType
-}> = ({ users, tab }) => {
+
+interface SocialCardProps {
+  users: SimilarUser[],
+}
+
+const SocialCard: React.FC<SocialCardProps> = ({ users }) => {
+  const [activeTab,setActiveTab] = useState<"friends" | "invites" | "similar">("similar");
+  const [search,setSearch] = useState<string>("");
   let content;
-  switch (tab) {
-    case "similar":
-      content = users.map(user=><ProfileMatch otherUser={user} key={user.id}/>)
-    break;
-    case "friends":
-      break;
-    case "invites":
-      content = <InvitionsCard invites={users} />
-      break;
-    default:
-      content = (
-        <View>
-          <Text>Hi there</Text>
-        </View>
-      )
+
+  if(activeTab === "similar"){
+    content = <ProfileMatch otherUsers={users} searchQuery={search}/>
+  }else if(activeTab === "friends"){
+    content = <FriendsLists users={users} searchQuery={search}/>
+  }else{
+    content = <InvitionsCard users={users} searchQuery={search}/>
   }
   return (
-   <>
-    {content}
-   </>
+    <View className="w-full h-full bg-white px-4 py-2">
+      {/* Search Bar */}
+      <View className="flex-row items-center bg-gray-100 rounded-full px-4 py-2 mb-4 mt-3">
+        <Image source={icons.search} className="w-6 h-6" />
+        <TextInput
+          placeholder="Search by name, genre or artist..."
+          className="flex-1 ml-2 font-Popping-SemiBold"
+          value={search}
+          onChangeText={(val) => setSearch(val)}
+        />
+        {search && (
+          <Feather
+            name="x"
+            size={24}
+            color="gray"
+            onPress={() => setSearch("")}
+          />
+        )}
+      </View>
+      <SocialTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+
+
+      <Text className="text-lg font-Popping-SemiBold mb-4 mt-2">{socialTabTitle[activeTab]}</Text>
+
+      <ScrollView className="flex-1">
+        {content}
+      </ScrollView>
+    </View>
   )
 }
 

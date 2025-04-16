@@ -1,14 +1,13 @@
-import { SocialTabType } from "@/schema/notificationSchema"
 import React from "react"
 import { View, TouchableOpacity,Text } from "react-native"
 
 
 const SocialTabs: React.FC<{
   activeTab : string,
-  setActiveTab : React.Dispatch<React.SetStateAction<keyof SocialTabType>>
+  setActiveTab : React.Dispatch<React.SetStateAction<'similar' | 'friends' | 'invites'>>
 }> = ({activeTab,setActiveTab}) => {
   return (
-    <View className="flex-row bg-white py-3 gap-5">
+    <View className="flex-row  px-5 bg-white py-3 gap-5">
       
       <TouchableOpacity
         className={`px-5 py-2 rounded-full ${activeTab === "friends" ? "bg-red-100" : "bg-gray-200"

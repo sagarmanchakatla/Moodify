@@ -1,14 +1,22 @@
 import supabase from "@/lib/supabase";
 import { SimilarUser, UserSchema } from "@/schema";
-import { calculateSimilarityScore } from "@/utils";
+import { calculateSimilarityScore, calculateSimilarityScoreHelper } from "@/utils";
 
 export const sendFriendRequest = async (userId: string, otherUserId: string) => {
-    const { error } = await supabase.from("UsersProfile").update({ 'invites': `${otherUserId}\n` }).eq('id', userId);
+    const { error } = await supabase
+        .rpc('addconnection', {
+            otherid: otherUserId,
+            userid: userId
+        });
+
     if (error) {
         console.log(error);
         throw Error(error.message ?? error.cause);
     }
+
+    return;
 }
+
 
 export const getAllUserInfo = async () => {
     const { data, error } = await supabase.from("UsersProfile").select("first_name,last_name,latitude,longitude,genre,fav_artist,id,pushToken").not("latitude", "is", null);
@@ -20,7 +28,7 @@ export const getAllUserInfo = async () => {
 }
 
 
-export const getSocialUsers = async (user: UserSchema):Promise<SimilarUser[]> => {
+export const getSocialUsers = async (user: UserSchema,) => {
     const { data, error } = await supabase
         .from("UsersProfile")
         .select("*")
@@ -30,7 +38,7 @@ export const getSocialUsers = async (user: UserSchema):Promise<SimilarUser[]> =>
 
     const usersWithScores: SimilarUser[] = data.map(
         (otherUser: UserSchema) => {
-            const similarity = calculateSimilarityScore(
+            const similarity = calculateSimilarityScoreHelper(
                 user.genre || "",
                 user.fav_artist || "",
                 otherUser.genre || "",
@@ -49,5 +57,31 @@ export const getSocialUsers = async (user: UserSchema):Promise<SimilarUser[]> =>
         .filter((user) => user.similarity_score >= .3) // users choices are similar upto 30% threshold value 
         .sort((a, b) => b.similarity_score - a.similarity_score);
 
-    return filteredUsers
+    return filteredUsers;
+}
+
+export const postAddToFriendsList = async (userId: string, otherUserId: string) => {
+    const { error } = await supabase
+        .rpc('addfriends', {
+            otherid: otherUserId,
+            userid: userId
+        });
+    if (error) {
+        console.log(error);
+        throw Error(error.message ?? error.cause);
+    }
+    return;
+}
+
+export const postRejectFriendRequest = async (userId: string, otherUserId: string) => {
+    const { error } = await supabase
+        .rpc('rejectrequest', {
+            otherid: otherUserId,
+            userid: userId
+        })
+    if (error) {
+        console.log(error);
+        throw Error(error.message ?? error.cause);
+    }
+    return;
 }

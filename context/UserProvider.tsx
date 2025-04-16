@@ -22,8 +22,9 @@ const initialState:UserContextType = {
     longitude : null,
     curr_mood : '',
     pushToken : '',
-    invites : '',
-    friends : ''
+    invites : [],
+    invitedUser : [],
+    friends : []
   },
   updateState : ()=>{}
 }
