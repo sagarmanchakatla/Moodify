@@ -11,20 +11,21 @@ import FriendsLists from './FriendsLists'
 
 
 interface SocialCardProps {
-  users: SimilarUser[],
+  similarUsers: SimilarUser[],
+  allUsers: SimilarUser[]
 }
 
-const SocialCard: React.FC<SocialCardProps> = ({ users }) => {
-  const [activeTab,setActiveTab] = useState<"friends" | "invites" | "similar">("similar");
-  const [search,setSearch] = useState<string>("");
+const SocialCard: React.FC<SocialCardProps> = ({ allUsers,similarUsers }) => {
+  const [activeTab, setActiveTab] = useState<"friends" | "invites" | "similar">("similar");
+  const [search, setSearch] = useState<string>("");
   let content;
 
-  if(activeTab === "similar"){
-    content = <ProfileMatch otherUsers={users} searchQuery={search}/>
-  }else if(activeTab === "friends"){
-    content = <FriendsLists users={users} searchQuery={search}/>
-  }else{
-    content = <InvitionsCard users={users} searchQuery={search}/>
+  if (activeTab === "similar") {
+    content = <ProfileMatch otherUsers={similarUsers} searchQuery={search} />
+  } else if (activeTab === "friends") {
+    content = <FriendsLists users={allUsers} searchQuery={search} />
+  } else {
+    content = <InvitionsCard users={allUsers} searchQuery={search} />
   }
   return (
     <View className="w-full h-full bg-white px-4 py-2">

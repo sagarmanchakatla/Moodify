@@ -57,7 +57,10 @@ export const getSocialUsers = async (user: UserSchema,) => {
         .filter((user) => user.similarity_score >= .3) // users choices are similar upto 30% threshold value 
         .sort((a, b) => b.similarity_score - a.similarity_score);
 
-    return filteredUsers;
+    return {
+        similarUsers : filteredUsers,
+        allUsers : usersWithScores
+    }
 }
 
 export const postAddToFriendsList = async (userId: string, otherUserId: string) => {

@@ -27,7 +27,7 @@ export default function SocialPage() {
       </View>
     )
   } else {
-    content = <SocialCard users={data!}/>
+    content = <SocialCard allUsers={data!.allUsers} similarUsers={data!.similarUsers}/>
   }
 
   return (
