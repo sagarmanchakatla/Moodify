@@ -20,6 +20,7 @@ import { Emotion, FaceEmotionSchema } from "@/schema/emotion";
 import { LinearGradient } from "expo-linear-gradient";
 import useUserProvider from "@/hook/useUserProvider";
 import useSongProvider from "@/hook/useSongProvider";
+import axios from "axios";
 
 export default function EmotionDetect() {
   const { uri, base64ImageString, resetImage, pickImage } = useImageProvider();
@@ -79,6 +80,26 @@ export default function EmotionDetect() {
     return emotion;
   };
 
+  // const flaskDetect = async (base64ImageString: string) => {
+  //   try {
+  //     console.log("Calling Flask API...");
+  //     const fullBase64String = `data:image/jpeg;base64,${base64ImageString}`; // Add prefix if missing
+  //     console.log("Base64 Image String:", fullBase64String);
+
+  //     const response = await axios.post(
+  //       "http://192.168.0.103:5000/analyze_mood",
+  //       { image: fullBase64String },
+  //       { headers: { "Content-Type": "application/json" } }
+  //     );
+
+  //     console.log("Flask Response:", response.data);
+  //     return response.data;
+  //   } catch (error) {
+  //     console.error("Error sending image to Flask:", error);
+  //     return { error: "Failed to analyze mood" };
+  //   }
+  // };
+
   const getEmotionConfidence = (data: Emotion, emotionType: string) => {
     return data[emotionType as keyof Emotion] * 100;
   };
@@ -88,6 +109,8 @@ export default function EmotionDetect() {
     setLoading(true);
     try {
       const data = await detectEmotion(base64ImageString);
+      // const data1 = await flaskDetect(base64ImageString);
+      // console.log(data1);
       setEmotionData(data);
       const detectedEmotion = getEmotionResult(data.faces[0]?.emotion);
       setEmotion(detectedEmotion);
