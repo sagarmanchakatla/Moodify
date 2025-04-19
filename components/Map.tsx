@@ -7,7 +7,7 @@ import { mapStyle } from '@/constants';
 import icons from '@/constants/icons';
 import useSWR from 'swr';
 import { getAllUserInfo } from '@/http/usershttp';
-import ProfileMatch from './ProfileMatch';
+import AllProfileWithScore from './AllProfileWithScores';
 
 
 export default function Map() {
@@ -72,7 +72,7 @@ export default function Map() {
           />
         ))}
       </MapView>
-      {selectedTap!==null && <ProfileMatch otherUser={getCurrentUser(selectedTap)} />}
+      {selectedTap!==null && <AllProfileWithScore otherUser={getCurrentUser(selectedTap)} />}
     </View>
   );
 }

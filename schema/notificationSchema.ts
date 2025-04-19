@@ -17,7 +17,7 @@ export type NotificationSchema = {
 }
 
 export type SocialTabType = {
-    similar: SimilarUser[],
-    friends: SimilarUser[],
-    invites: SimilarUser[]
+    users: SimilarUser[],
+    friends: string[],
+    invites: string[]
 }

@@ -14,8 +14,9 @@ export interface UserSchema {
   longitude: number | null;
   curr_mood: string;
   pushToken : string;
-  invites : string,
-  friends : string
+  invites : string[],
+  invitedUser : string[],
+  friends : string[]
 }
 
 export interface UserContextType {

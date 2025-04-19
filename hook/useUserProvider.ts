@@ -13,9 +13,9 @@ import * as Notifications from "expo-notifications"
 const useUserProvider = () => {
   const { isAuthenticated, updateState, user } = useContext<UserContextType>(UserContext);
 
-  const generatePushTokenNotification = async ()=>{
+  const generatePushTokenNotification = async () => {
     const response = await Notifications.getExpoPushTokenAsync({
-      projectId : "37682775-137d-49f7-aa18-d75d398a6540"
+      projectId: "37682775-137d-49f7-aa18-d75d398a6540"
     });
     return response.data;
   }
@@ -53,7 +53,7 @@ const useUserProvider = () => {
           .from("UsersProfile")
           .select("*")
           .eq("id", userId)
-          .single(); 
+          .single();
         if (count === 0 || error) {  // new user account storing into db
           const token = await generatePushTokenNotification();
           const { error: insertError, data: userData } = await supabase
@@ -61,7 +61,7 @@ const useUserProvider = () => {
             .insert({
               id: userId,
               first_name: fullName,
-              pushToken : token
+              pushToken: token
             })
             .select("*")
             .single();
@@ -99,12 +99,12 @@ const useUserProvider = () => {
   const updateUserProfile = (
     data:
       | {
-          gender: string;
-          weight: number;
-          height: number;
-          date_of_birth: Date;
-          age: number;
-        }
+        gender: string;
+        weight: number;
+        height: number;
+        date_of_birth: Date;
+        age: number;
+      }
       | { genre: string }
       | { fav_artist: string }
   ) => {
@@ -155,7 +155,7 @@ const useUserProvider = () => {
     console.log(token + " inside the singUpuser")
     const { data: newUser, error: creationError } = await supabase
       .from("UsersProfile")
-      .insert({ id: data.user!.id,pushToken:token })
+      .insert({ id: data.user!.id, pushToken: token })
       .select("*")
       .single();
     if (creationError) {
@@ -169,7 +169,7 @@ const useUserProvider = () => {
           id: data.user!.id,
           first_name: userData.first_name,
           last_name: userData.last_name,
-          pushToken : token
+          pushToken: token
         },
       }));
     }
@@ -329,8 +329,40 @@ const useUserProvider = () => {
     }
   };
 
+  const addInviteConnection = (otherId: string) => {
+    updateState(pre => ({
+      ...pre,
+      user: {
+        ...pre.user!,
+        invites: [...pre.user!.invites!, otherId],
+        friends : [...pre.user!.friends!,otherId]
+      }
+    }));
+  }
 
- 
+  const addFriendsConnection = (otherId: string) => {
+    updateState(pre => ({
+      ...pre,
+      user: {
+        ...pre.user!,
+        friends: [...pre.user!.invites!, otherId],
+        invitedUser : pre.user!.invitedUser.filter(userIds=>userIds!==otherId),
+        invites : pre.user!.invites.filter(userIds=>userIds!==otherId)
+      }
+    }))
+  }
+
+  const rejectFriendConnection = (otherId: string) => {
+    updateState(pre => ({
+      ...pre,
+      user: {
+        ...pre.user!,
+        invitedUser : pre.user!.invitedUser.filter(userIds=>userIds!==otherId),
+        invites : pre.user!.invites.filter(userIds=>userIds!==otherId)
+      }
+    }));
+  }
+
   return {
     isAuthenticated,
     user,
@@ -338,14 +370,17 @@ const useUserProvider = () => {
     uploadProfilePicture,
     logout,
     performOAuth,
+    singInWithEmailAndPassword,
+    storeMood,
     updateUserProfile,
     submitUserProfile,
     singUpUser,
     resetPassword,
     validateOTP,
     setUserLocation,
-    singInWithEmailAndPassword,
-    storeMood,
+    addInviteConnection,
+    addFriendsConnection,
+    rejectFriendConnection,
   };
 };
 
