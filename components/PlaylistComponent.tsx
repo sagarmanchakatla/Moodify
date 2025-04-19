@@ -64,6 +64,7 @@ const PlaylistComponent = () => {
         <View className="mt-4">
           {playlists.map((playlist, index) => (
             <TouchableOpacity
+              key={playlist.id}
               onPress={() => router.push(`(root)/playlist/${playlist.id}`)}
             >
               <PlaylistItem

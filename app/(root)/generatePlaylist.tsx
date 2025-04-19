@@ -56,7 +56,7 @@ const GeneratePlaylist = () => {
     setGeneratingPlaylist(true); // Start loading
     try {
       const response = await fetch(
-        "http://192.168.0.104:5000/generate_playlists",
+        "http://192.168.32.241:5000/generate_playlists",
         {
           method: "POST",
           headers: {
